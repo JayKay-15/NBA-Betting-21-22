@@ -52,7 +52,7 @@
 - Predicts scores
 - Simple Monte Carlo simulation
 
-## Giselle
+## Gisele
 
 ### Stats Used
 
