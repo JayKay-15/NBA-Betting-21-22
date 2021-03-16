@@ -11,8 +11,6 @@
 -	ORB % (ORB/(ORB + oDRB))
 -	DRB % (DRB/(DRB + oORB))
 -	TRB % (TRB/(TRB + oTRB))
--	ORB % (ORB/(ORB + oDRB))
--	DRB % (DRB/(DRB + oORB))
 -	AST % (AST/FGM)
 -	TO % or (TOV/Poss)
 -	STL % (STL/oPoss)
