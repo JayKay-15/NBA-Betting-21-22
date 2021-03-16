@@ -8,9 +8,9 @@
 - DRtg
 - Pace
 
--   Predicts scores and win probability
--   Simple rating and pace calculcations
--   Pythagorean win expectation for win prob
+- Predicts scores and win probability
+- Simple rating and pace calculcations
+- Pythagorean win expectation for win prob
 
 ## Tyra
 
@@ -25,8 +25,8 @@
 - TO %
 - FTR
 
--   Predicts scores and win probability
--   Linear and logistic regression on database of previous four years of stats
+- Predicts scores and win probability
+- Linear and logistic regression on database of previous four years of stats
 
 ## Kate Moss
 
@@ -43,13 +43,13 @@
 - TO %
 - Foul %
 
--   Predicts scores
--   Simple Monte Carlo simulation
+- Predicts scores
+- Simple Monte Carlo simulation
 
 ## Giselle
 
 ### Stats Used
 
--   Combination of Kendall, Tyra and Kate Moss for score predictions
--   Combination of Kendall and Tyra for win probability
+- Combination of Kendall, Tyra and Kate Moss for score predictions
+- Combination of Kendall and Tyra for win probability
 
