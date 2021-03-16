@@ -9,6 +9,8 @@
 - Pace
 
 - Predicts scores and win probability
+- Simple rating and pace calculcations
+- Pythagorean win expectation for win prob
 
 ## Tyra
 
@@ -24,6 +26,7 @@
 - FTR
 
 - Predicts scores and win probability
+- Linear and logistic regression on database of previous four years of stats
 
 ## Kate Moss
 
@@ -41,6 +44,7 @@
 - Foul %
 
 - Predicts scores
+- Simple Monte Carlo simulation
 
 ## Giselle
 
