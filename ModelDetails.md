@@ -47,6 +47,8 @@
 - TO %
 - Foul %
 
+-----
+
 - Predicts scores
 - Simple Monte Carlo simulation
 
