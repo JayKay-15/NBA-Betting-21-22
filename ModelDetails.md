@@ -1,8 +1,8 @@
-### Model Details
+# Model Details
 
 ## Kendall
 
-# Stats Used
+### Stats Used
 
 - ORtg
 - DRtg
@@ -12,7 +12,7 @@
 
 ## Tyra
 
-# Stats Used
+### Stats Used
 
 - ORtg
 - DRtg
@@ -27,7 +27,7 @@
 
 ## Kate Moss
 
-# Stats Used
+### Stats Used
 
 - FG %
 - SR2 %
@@ -44,7 +44,7 @@
 
 ## Giselle
 
-# Stats Used
+### Stats Used
 
 - Combination of Kendall, Tyra and Kate Moss for score predictions
 - Combination of Kendall and Tyra for win probability
