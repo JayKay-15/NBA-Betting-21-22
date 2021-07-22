@@ -73,90 +73,37 @@ for (a in a:g) {
 }
 
 kendall_predict <- kendall_predict %>%
-    mutate_if(is.numeric, round, 3)
-
-
-
-
-
+    mutate(across(where(is.numeric)), round, 3)
 
 
 #### Tyra ####
 
 ## Tyra Fitting
 
-df_16_17 <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Database/Database/YTD - Weighted/2016-2017 - YTD Weighted - v3 - weekly.xlsx", sheet = "final_ytd")
-colnames(df_16_17)[9:78] <- c("FG_away","SR2_away","FG3_away","SR3_away","FT_away","FTR_away","ORB_away","DRB_away","TRB_away",
-                              "AST_away","TO_away","STL_away","BLK_away","PF_away","eFG_away","TS_away","Pace_away","ORtg_away",
-                              "DRtg_away","oFG_away","oSR2away","oFG3_away","oSR3_away","oFT_away","oFTR_away","oORB_away",
-                              "oDRB_away","oTRB_away","oAST_away","oTO_away","oSTL_away","oBLK_away","oPF_away","oeFG_away",
-                              "oTS_away",
-                              "FG_home","SR2_home","FG3_home","SR3_home","FT_home","FTR_home","ORB_home","DRB_home","TRB_home",
-                              "AST_home","TO_home","STL_home","BLK_home","PF_home","eFG_home","TS_home","Pace_home","ORtg_home",
-                              "DRtg_home","oFG_home","oSR2home","oFG3_home","oSR3_home","oFT_home","oFTR_home","oORB_home",
-                              "oDRB_home","oTRB_home","oAST_home","oTO_home","oSTL_home","oBLK_home","oPF_home","oeFG_home",
-                              "oTS_home")
-
-df_17_18 <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Database/Database/YTD - Weighted/2017-2018 - YTD Weighted - v3 - weekly.xlsx", sheet = "final_ytd")
-colnames(df_17_18)[9:78] <- c("FG_away","SR2_away","FG3_away","SR3_away","FT_away","FTR_away","ORB_away","DRB_away","TRB_away",
-                              "AST_away","TO_away","STL_away","BLK_away","PF_away","eFG_away","TS_away","Pace_away","ORtg_away",
-                              "DRtg_away","oFG_away","oSR2away","oFG3_away","oSR3_away","oFT_away","oFTR_away","oORB_away",
-                              "oDRB_away","oTRB_away","oAST_away","oTO_away","oSTL_away","oBLK_away","oPF_away","oeFG_away",
-                              "oTS_away",
-                              "FG_home","SR2_home","FG3_home","SR3_home","FT_home","FTR_home","ORB_home","DRB_home","TRB_home",
-                              "AST_home","TO_home","STL_home","BLK_home","PF_home","eFG_home","TS_home","Pace_home","ORtg_home",
-                              "DRtg_home","oFG_home","oSR2home","oFG3_home","oSR3_home","oFT_home","oFTR_home","oORB_home",
-                              "oDRB_home","oTRB_home","oAST_home","oTO_home","oSTL_home","oBLK_home","oPF_home","oeFG_home",
-                              "oTS_home")
-
-df_18_19 <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Database/Database/YTD - Weighted/2018-2019 - YTD Weighted - v3 - weekly.xlsx", sheet = "final_ytd")
-colnames(df_18_19)[9:78] <- c("FG_away","SR2_away","FG3_away","SR3_away","FT_away","FTR_away","ORB_away","DRB_away","TRB_away",
-                              "AST_away","TO_away","STL_away","BLK_away","PF_away","eFG_away","TS_away","Pace_away","ORtg_away",
-                              "DRtg_away","oFG_away","oSR2away","oFG3_away","oSR3_away","oFT_away","oFTR_away","oORB_away",
-                              "oDRB_away","oTRB_away","oAST_away","oTO_away","oSTL_away","oBLK_away","oPF_away","oeFG_away",
-                              "oTS_away",
-                              "FG_home","SR2_home","FG3_home","SR3_home","FT_home","FTR_home","ORB_home","DRB_home","TRB_home",
-                              "AST_home","TO_home","STL_home","BLK_home","PF_home","eFG_home","TS_home","Pace_home","ORtg_home",
-                              "DRtg_home","oFG_home","oSR2home","oFG3_home","oSR3_home","oFT_home","oFTR_home","oORB_home",
-                              "oDRB_home","oTRB_home","oAST_home","oTO_home","oSTL_home","oBLK_home","oPF_home","oeFG_home",
-                              "oTS_home")
-
-df_19_20 <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Database/Database/YTD - Weighted/2019-2020 - YTD Weighted - v3 - weekly - No Bubble.xlsx", sheet = "final_ytd")
-colnames(df_19_20)[9:78] <- c("FG_away","SR2_away","FG3_away","SR3_away","FT_away","FTR_away","ORB_away","DRB_away","TRB_away",
-                              "AST_away","TO_away","STL_away","BLK_away","PF_away","eFG_away","TS_away","Pace_away","ORtg_away",
-                              "DRtg_away","oFG_away","oSR2away","oFG3_away","oSR3_away","oFT_away","oFTR_away","oORB_away",
-                              "oDRB_away","oTRB_away","oAST_away","oTO_away","oSTL_away","oBLK_away","oPF_away","oeFG_away",
-                              "oTS_away",
-                              "FG_home","SR2_home","FG3_home","SR3_home","FT_home","FTR_home","ORB_home","DRB_home","TRB_home",
-                              "AST_home","TO_home","STL_home","BLK_home","PF_home","eFG_home","TS_home","Pace_home","ORtg_home",
-                              "DRtg_home","oFG_home","oSR2home","oFG3_home","oSR3_home","oFT_home","oFTR_home","oORB_home",
-                              "oDRB_home","oTRB_home","oAST_home","oTO_home","oSTL_home","oBLK_home","oPF_home","oeFG_home",
-                              "oTS_home")
-
-master_reg <- bind_rows(df_16_17,df_17_18,df_18_19,df_19_20)
+master_reg <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Database/Database/NBAdb1721.xlsx")  
 
 margin_fit <- lm(Margin ~ ORtg_away + DRtg_away + Pace_away + eFG_away + ORB_away +
-                     TO_away + FTR_away + oeFG_away + DRB_away + oTO_away + 
+                     TOV_away + FTR_away + oeFG_away + DRB_away + oTOV_away + 
                      oFTR_away + ORtg_home + DRtg_home + Pace_home + eFG_home + ORB_home +
-                     TO_home + FTR_home + oeFG_home + DRB_home + oTO_home + 
+                     TOV_home + FTR_home + oeFG_home + DRB_home + oTOV_home + 
                      oFTR_home, data = master_reg)
 
 ascore_fit <- lm(AS ~ ORtg_away + DRtg_away + Pace_away + eFG_away + ORB_away +
-                     TO_away + FTR_away + oeFG_away + DRB_away + oTO_away + 
+                     TOV_away + FTR_away + oeFG_away + DRB_away + oTOV_away + 
                      oFTR_away + ORtg_home + DRtg_home + Pace_home + eFG_home + ORB_home +
-                     TO_home + FTR_home + oeFG_home + DRB_home + oTO_home + 
+                     TOV_home + FTR_home + oeFG_home + DRB_home + oTOV_home + 
                      oFTR_home, data = master_reg)
 
 hscore_fit <- lm(HS ~ ORtg_away + DRtg_away + Pace_away + eFG_away + ORB_away +
-                     TO_away + FTR_away + oeFG_away + DRB_away + oTO_away + 
+                     TOV_away + FTR_away + oeFG_away + DRB_away + oTOV_away + 
                      oFTR_away + ORtg_home + DRtg_home + Pace_home + eFG_home + ORB_home +
-                     TO_home + FTR_home + oeFG_home + DRB_home + oTO_home + 
+                     TOV_home + FTR_home + oeFG_home + DRB_home + oTOV_home + 
                      oFTR_home, data = master_reg)
 
 win_fit <- glm(Win ~ ORtg_away + DRtg_away + Pace_away + eFG_away + ORB_away +
-                   TO_away + FTR_away + oeFG_away + DRB_away + oTO_away + 
+                   TOV_away + FTR_away + oeFG_away + DRB_away + oTOV_away + 
                    oFTR_away + ORtg_home + DRtg_home + Pace_home + eFG_home + ORB_home +
-                   TO_home + FTR_home + oeFG_home + DRB_home + oTO_home + 
+                   TOV_home + FTR_home + oeFG_home + DRB_home + oTOV_home + 
                    oFTR_home, data = master_reg, family = "binomial")
 
 ### Tyra Predictions ###
@@ -204,18 +151,18 @@ for (a in a:g) {
     tyra_home_oto <- as.numeric(tyra_home[,31])
     
     tyra_input <- data.frame(tyra_away_oe,tyra_away_de,tyra_away_pa,
-                             tyra_away_efg,tyra_away_ftr,tyra_away_orb,tyra_away_to,
-                             tyra_away_oefg,tyra_away_oftr,tyra_away_drb,tyra_away_oto,
+                             tyra_away_efg,tyra_away_ftr,tyra_away_orb,tyra_away_tov,
+                             tyra_away_oefg,tyra_away_oftr,tyra_away_drb,tyra_away_otov,
                              tyra_home_oe,tyra_home_de,tyra_home_pa,
-                             tyra_home_efg,tyra_home_ftr,tyra_home_orb,tyra_home_to,
-                             tyra_home_oefg,tyra_home_oftr,tyra_home_drb,tyra_home_oto)
+                             tyra_home_efg,tyra_home_ftr,tyra_home_orb,tyra_home_tov,
+                             tyra_home_oefg,tyra_home_oftr,tyra_home_drb,tyra_home_otov)
     
     colnames(tyra_input) <- c("ORtg_away","DRtg_away","Pace_away",
-                              "eFG_away","FTR_away","ORB_away","TO_away",
-                              "oeFG_away","oFTR_away","DRB_away","oTO_away",
+                              "eFG_away","FTR_away","ORB_away","TOV_away",
+                              "oeFG_away","oFTR_away","DRB_away","oTOV_away",
                               "ORtg_home","DRtg_home","Pace_home",
-                              "eFG_home","FTR_home","ORB_home","TO_home",
-                              "oeFG_home","oFTR_home","DRB_home","oTO_home")
+                              "eFG_home","FTR_home","ORB_home","TOV_home",
+                              "oeFG_home","oFTR_home","DRB_home","oTOV_home")
     
     tyra_margin <- as.numeric(predict(margin_fit, newdata = tyra_input, type = "response"))
     tyra_ascore <- as.numeric(predict(ascore_fit, newdata = tyra_input, type = "response"))
@@ -236,7 +183,7 @@ for (a in a:g) {
 }
 
 tyra_predict <- tyra_predict %>%
-    mutate_if(is.numeric, round, 3)
+    mutate(across(where(is.numeric)), round, 3)
 
 
 
