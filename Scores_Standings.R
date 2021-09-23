@@ -8,11 +8,11 @@ pacman::p_load(tidyverse, readxl, na.tools, caTools, Amelia, lubridate, hms,
                corrgram, corrplot)
 
 rm(list=ls())
-setwd("/Users/Jesse/Documents/MyStuff/NBA Database/2021-2022")
+setwd("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/")
 
 y <- as_date("2021-03-14")
 fn <- "Scores & Standings"
-u <- paste0("/Users/Jesse/Documents/MyStuff/NBA Database/2020-2021/",fn,".xlsx")
+u <- paste0("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/",fn,".xlsx")
 
 game_logs(seasons = 2021, result_types = c("team","players"))
 

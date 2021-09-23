@@ -1,27 +1,22 @@
 ######## Stat CleanR ########
 
-### Creates adjusted year to date stats for Kendall & Tyra Models
+### Creates adjusted year to date stats for score and win predictions
 
 if (!require("pacman")) install.packages("pacman"); library(pacman)
-pacman::p_load(tidyverse, readxl, na.tools, caTools, Amelia, lubridate, hms,
-               ggthemes, ggrepel, ggimage, XML, RCurl, openxlsx,
-               rvest, nflfastR, nbastatR, nbaTools, data.table,
-               here, skimr, janitor, SimDesign, zoo, future,
-               corrgram, corrplot)
+pacman::p_load(tidyverse, readxl, lubridate, openxlsx, nbastatR, rvest)
 
 rm(list=ls())
-setwd("/Users/Jesse/Documents/MyStuff/NBA Database/2020-2021")
+setwd("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/")
 
 # cur_date <- "3_15_2021"
-# u <- paste0("/Users/Jesse/Documents/MyStuff/NBA Database/2021-2022/",cur_date,".xlsx")
 
 ### Pull game logs & arrange by date
 
 game_logs(seasons = 2021, result_types = c("team","players"))
 
 dataGameLogsTeam <- dataGameLogsTeam %>% arrange(dateGame,idGame)
-dataGameLogsPlayer <- dataGameLogsPlayer %>% arrange(dateGame,idGame)
 dataGameLogsTeam$dateGame <- as_date(dataGameLogsTeam$dateGame)
+dataGameLogsPlayer <- dataGameLogsPlayer %>% arrange(dateGame,idGame)
 
 ### Attach game logs to itself to get all stats for each game in one row
 
@@ -78,8 +73,8 @@ season_grouped <- gl %>%
 
 season_adv <- season_grouped
 
-season_adv$Poss <- with(season_adv, teamFGA - teamORB + teamTO + (.44 * teamFTA))
-season_adv$oPoss <- with(season_adv, opptFGA - opptORB + opptTO + (.44 * opptFTA))
+season_adv$Poss <- with(season_adv, teamFGA - teamORB + teamTOV + (.44 * teamFTA))
+season_adv$oPoss <- with(season_adv, opptFGA - opptORB + opptTOV + (.44 * opptFTA))
 season_adv$Pace <- with(season_adv, 48 * (Poss + oPoss) / (2 * (teamMin/5)))
 season_adv$oPace <- with(season_adv, 48 * (Poss + oPoss) / (2 * (opptMin/5)))
 season_adv$ORtg <- with(season_adv, (teamPTS / Poss) * 100)
@@ -133,8 +128,8 @@ home_grouped <- home %>%
 
 home_adv <- home_grouped
 
-home_adv$Poss <- with(home_adv, teamFGA - teamORB + teamTO + (.44 * teamFTA))
-home_adv$oPoss <- with(home_adv, opptFGA - opptORB + opptTO + (.44 * opptFTA))
+home_adv$Poss <- with(home_adv, teamFGA - teamORB + teamTOV + (.44 * teamFTA))
+home_adv$oPoss <- with(home_adv, opptFGA - opptORB + opptTOV + (.44 * opptFTA))
 home_adv$Pace <- with(home_adv, 48 * (Poss + oPoss) / (2 * (teamMin/5)))
 home_adv$oPace <- with(home_adv, 48 * (Poss + oPoss) / (2 * (opptMin/5)))
 home_adv$ORtg <- with(home_adv, (teamPTS / Poss) * 100)
@@ -188,8 +183,8 @@ away_grouped <- away %>%
 
 away_adv <- away_grouped
 
-away_adv$Poss <- with(away_adv, teamFGA - teamORB + teamTO + (.44 * teamFTA))
-away_adv$oPoss <- with(away_adv, opptFGA - opptORB + opptTO + (.44 * opptFTA))
+away_adv$Poss <- with(away_adv, teamFGA - teamORB + teamTOV + (.44 * teamFTA))
+away_adv$oPoss <- with(away_adv, opptFGA - opptORB + opptTOV + (.44 * opptFTA))
 away_adv$Pace <- with(away_adv, 48 * (Poss + oPoss) / (2 * (teamMin/5)))
 away_adv$oPace <- with(away_adv, 48 * (Poss + oPoss) / (2 * (opptMin/5)))
 away_adv$ORtg <- with(away_adv, (teamPTS / Poss) * 100)
@@ -238,9 +233,11 @@ home_lg_avg <- home_final %>%
     group_by() %>%
     summarise(across(where(is.numeric), mean))
 
+home_lg_avg$PPG <- mean(home$teamPTS)
+
 home_lg_avg$Lg_Avg <- "Home"
 home_lg_avg <- home_lg_avg %>%
-    select(36,1:35)
+    select(37,1:36)
 
 ### AWAY LEAGUE AVG STATS
 
@@ -248,9 +245,11 @@ away_lg_avg <- away_final %>%
     group_by() %>%
     summarise(across(where(is.numeric), mean))
 
+away_lg_avg$PPG <- mean(away$teamPTS)
+
 away_lg_avg$Lg_Avg <- "Away"
 away_lg_avg <- away_lg_avg %>%
-    select(36,1:35)
+    select(37,1:36)
 
 ### SEASON LEAGUE AVG STATS
 
@@ -258,9 +257,11 @@ season_lg_avg <- season_final %>%
     group_by() %>%
     summarise(across(where(is.numeric), mean))
 
+season_lg_avg$PPG <- (away_lg_avg$PPG + home_lg_avg$PPG)/2
+
 season_lg_avg$Lg_Avg <- "Season"
 season_lg_avg <- season_lg_avg %>%
-    select(36,1:35)
+    select(37,1:36)
 
 # COMBINE LEAGUE AVERAGE TABLES
 
@@ -270,8 +271,8 @@ league_avg <- bind_rows(season_lg_avg, home_lg_avg, away_lg_avg)
 
 raw_adv <- gl
 
-raw_adv$Poss <- with(raw_adv, teamFGA - teamORB + teamTO + (.44 * teamFTA))
-raw_adv$oPoss <- with(raw_adv, opptFGA - opptORB + opptTO + (.44 * opptFTA))
+raw_adv$Poss <- with(raw_adv, teamFGA - teamORB + teamTOV + (.44 * teamFTA))
+raw_adv$oPoss <- with(raw_adv, opptFGA - opptORB + opptTOV + (.44 * opptFTA))
 raw_adv$Pace <- with(raw_adv, 48 * (Poss + oPoss) / (2 * (teamMin/5)))
 raw_adv$oPace <- with(raw_adv, 48 * (Poss + oPoss) / (2 * (opptMin/5)))
 raw_adv$ORtg <- with(raw_adv, (teamPTS / Poss) * 100)
@@ -314,66 +315,23 @@ raw_adv$oTS <- with(raw_adv, opptPTS / (2 * opptFGA + .44 * opptFTA))
 raw_final <- raw_adv %>%
     select(2:4,46:77,44,45,42)
 
-# ###### HOME/AWAY DIFF ######
-# 
-# #HOME DIFF
-# 
-# home_diff <- league_avg[2,-1] - league_avg[1,-1]
-# home_diff_percent <- home_diff[ , ]/league_avg[ 1, -1]
-# 
-# #AWAY DIFF
-# 
-# away_diff <- league_avg[3,-1] - league_avg[1,-1]
-# away_diff_percent <- away_diff[ , ]/league_avg[ 1, -1]
-# 
-# #ADVANTAGE
-# 
-# advantage_season <- gl %>%
-#     select(6) %>%
-#     summarise_if(is.numeric, mean)
-# 
-# advantage_season$ppg <- "season_ppg"
-# 
-# advantage_home <- home %>%
-#     select(2,6) %>%
-#     summarise_if(is.numeric, mean)
-# 
-# advantage_home$ppg <- "home_ppg"
-# 
-# advantage_away <- away %>%
-#     select(2,6) %>%
-#     summarise_if(is.numeric, mean)
-# 
-# advantage_away$ppg <- "away_ppg"
-# 
-# advantage <- bind_rows(advantage_season,advantage_home,advantage_away)
-# 
-# advantage_diff_home <- advantage[2,1] - advantage[1,1]
-# # advantage_diff_home <- advantage_diff_home[,]/advantage [1,1]
-# colnames(advantage_diff_home) <- "Home Advantage Points"
-# 
-# advantage_diff_away <- advantage[3,1] - advantage[1,1]
-# # advantage_diff_away <- advantage_diff_away[,]/advantage[1,1]
-# colnames(advantage_diff_away) <- "Away Advantage Points"
-# 
-# advantage_mx <- matrix()
-# advantage_mx <- bind_cols(advantage_diff_home, advantage_diff_away)
-
 ######### ROUND 1 ADJUSTMENTS ########
 
 ## join each team's average stats on to raw_adj
 ## split by home/away then add averages
 ## bring file back together
 
-raw_adj_home <- left_join(raw_final, away_final, by = c("opptName" = "teamName")) %>%
+raw_adj_home <- raw_final %>%
+    left_join(away_final, by = c("opptName" = "teamName")) %>%
     left_join(., home_final, by = c("teamName" = "teamName")) %>%
     filter(teamLoc == "H")
 
-raw_adj_away <- left_join(raw_final, home_final, by = c("opptName" = "teamName")) %>%
+raw_adj_away <- raw_final %>%
+    left_join(home_final, by = c("opptName" = "teamName")) %>%
     left_join(., away_final, by = c("teamName" = "teamName")) %>%
     filter(teamLoc == "A")
 
-raw_adj <- bind_rows(raw_adj_home,raw_adj_away)
+raw_adj <- bind_rows(raw_adj_home, raw_adj_away)
 
 # opptavg = .y, team avg. = no tail, team actual for that game = .x
 
@@ -441,11 +399,14 @@ away_adj_round_1 <- raw_adj %>%
 ######### ROUND 2 ADJUSTMENTS ########
 
 #Joining for oppt stats
-raw_adj_home_2 <- left_join(raw_final, away_adj_round_1, by = c("opptName" = "teamName")) %>%
+raw_adj_home_2 <- raw_final %>%
+    left_join(away_adj_round_1, by = c("opptName" = "teamName")) %>%
     left_join(., home_adj_round_1, by = c("teamName" = "teamName")) %>%
     filter(teamLoc == "H")
+
 #Joining for team stats
-raw_adj_away_2 <- left_join(raw_final, home_adj_round_1, by = c("opptName" = "teamName")) %>%
+raw_adj_away_2 <- raw_final %>%
+    left_join(home_adj_round_1, by = c("opptName" = "teamName")) %>%
     left_join(., away_adj_round_1, by = c("teamName" = "teamName")) %>%
     filter(teamLoc == "A")
 
@@ -517,11 +478,14 @@ away_adj_round_2 <- raw_adj_2 %>%
 ######### ROUND 3 ADJUSTMENTS ########
 
 #Joining for oppt stats
-raw_adj_home_3 <- left_join(raw_final, away_adj_round_2, by = c("opptName" = "teamName")) %>%
+raw_adj_home_3 <- raw_final %>%
+    left_join(away_adj_round_2, by = c("opptName" = "teamName")) %>%
     left_join(., home_adj_round_2, by = c("teamName" = "teamName")) %>%
     filter(teamLoc == "H")
+
 #Joining for team stats
-raw_adj_away_3 <- left_join(raw_final, home_adj_round_2, by = c("opptName" = "teamName")) %>%
+raw_adj_away_3 <- raw_final %>%
+    left_join(home_adj_round_2, by = c("opptName" = "teamName")) %>%
     left_join(., away_adj_round_2, by = c("teamName" = "teamName")) %>%
     filter(teamLoc == "A")
 
@@ -983,27 +947,6 @@ colnames(season_final_wt) <- c("Team","FG","SR2","FG3","SR3","FT","FTR","ORB","D
                              "oFG","oSR2","oFG3","oSR3","oFT","oFTR","oORB","oDRB","oTRB",
                              "oAST","oTOV","oSTL","oBLK","oPF","oeFG","oTS",
                              "ORtg","DRtg","Pace")
-
-# #### STANDARDIZING STATS ####
-# 
-# std_stats <- function(x) {
-#     (x - mean(x)) / sd(x)
-# }
-# 
-# away_final_wt_std <- away_final_wt %>% mutate(across(c(2:36), std_stats))
-# home_final_wt_std <- home_final_wt %>% mutate(across(c(2:36), std_stats))
-# season_final_wt_std <- season_final_wt %>% mutate(across(c(2:36), std_stats))
-
-##### PRINTING TO EXCEL #####
-
-# wb <- createWorkbook()
-# addWorksheet(wb, sheetName = "Kendall")
-# addWorksheet(wb, sheetName = "Tyra")
-# 
-# writeData(wb, sheet = "Kendall", x = kendall_predict)
-# writeData(wb, sheet = "Tyra", x = tyra_predict)
-# 
-# saveWorkbook(wb, file = u)
 
 
 

@@ -1,6 +1,6 @@
 #### Slate ####
 
-slate <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Database/2021-2022/Slate.xlsx") # Today's games
+slate <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Slate.xlsx") # Today's games
 slate <- drop_na(slate)
 
 #### Kendall ####
@@ -21,16 +21,16 @@ for (a in a:g) {
     kendall_home <- home_final_wt %>%
         filter(Team == slate_home)
     
-    kendall_away_oe <- as.numeric(kendall_away[,19])
-    kendall_away_de <- as.numeric(kendall_away[,20])
-    kendall_away_pa <- as.numeric(kendall_away[,18])
+    kendall_away_oe <- as.numeric(kendall_away[,34])
+    kendall_away_de <- as.numeric(kendall_away[,35])
+    kendall_away_pa <- as.numeric(kendall_away[,36])
     
-    kendall_home_oe <- as.numeric(kendall_home[,19])
-    kendall_home_de <- as.numeric(kendall_home[,20])
-    kendall_home_pa <- as.numeric(kendall_home[,18])
+    kendall_home_oe <- as.numeric(kendall_home[,34])
+    kendall_home_de <- as.numeric(kendall_home[,35])
+    kendall_home_pa <- as.numeric(kendall_home[,36])
     
-    lg_pace <- as.numeric(league_avg[1,18])
-    lg_oe <- as.numeric(league_avg[1,19])
+    lg_pace <- as.numeric(league_avg[1,34])
+    lg_oe <- as.numeric(league_avg[1,36])
     
     away_pace_vslg <- kendall_away_pa - lg_pace
     home_pace_vslg <- kendall_home_pa - lg_pace
@@ -55,14 +55,15 @@ for (a in a:g) {
     away_proj_oe <- away_proj_oe / 100
     home_proj_oe <- home_proj_oe / 100
     
-    away_kendall_score <- (away_proj_oe * expected_pace) + as.numeric(advantage_mx[1,2])
-    home_kendall_score <- (home_proj_oe * expected_pace) + as.numeric(advantage_mx[1,2])
+    away_kendall_score <- (away_proj_oe * expected_pace) #+ as.numeric(advantage_mx[1,2])
+    home_kendall_score <- (home_proj_oe * expected_pace) #+ as.numeric(advantage_mx[1,2])
     
     away_kendall_win <- (away_proj_oe ^ 14.23) / ((away_proj_oe ^ 14.23) + (home_proj_oe ^ 14.23))
     home_kendall_win <- 1 - away_kendall_win
     
     holder <- slate[a,1:2]
-    holder$Margin <- away_kendall_score - home_kendall_score
+    holder$Away_Margin <- away_kendall_score - home_kendall_score
+    holder$Home_Margin <- home_kendall_score - away_kendall_score
     holder$Away_score <- away_kendall_score
     holder$Home_score <- home_kendall_score
     holder$Away_win <- away_kendall_win
@@ -73,14 +74,14 @@ for (a in a:g) {
 }
 
 kendall_predict <- kendall_predict %>%
-    mutate(across(where(is.numeric)), round, 3)
+    mutate(across(where(is.numeric), round, 3))
 
 
 #### Tyra ####
 
 ## Tyra Fitting
 
-master_reg <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Database/Database/NBAdb1721.xlsx")  
+master_reg <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBAdb/NBAdb1721.xlsx")  
 
 margin_fit <- lm(Margin ~ ORtg_away + DRtg_away + Pace_away + eFG_away + ORB_away +
                      TOV_away + FTR_away + oeFG_away + DRB_away + oTOV_away + 
@@ -124,31 +125,31 @@ for (a in a:g) {
     tyra_home <- home_final_wt %>%
         filter(Team == slate_home)
     
-    tyra_away_oe <- as.numeric(tyra_away[,19])
-    tyra_away_de <- as.numeric(tyra_away[,20])
-    tyra_away_pa <- as.numeric(tyra_away[,18])
+    tyra_away_oe <- as.numeric(tyra_away[,34])
+    tyra_away_de <- as.numeric(tyra_away[,35])
+    tyra_away_pa <- as.numeric(tyra_away[,36])
     
-    tyra_home_oe <- as.numeric(tyra_home[,19])
-    tyra_home_de <- as.numeric(tyra_home[,20])
-    tyra_home_pa <- as.numeric(tyra_home[,18])
+    tyra_home_oe <- as.numeric(tyra_home[,34])
+    tyra_home_de <- as.numeric(tyra_home[,35])
+    tyra_home_pa <- as.numeric(tyra_home[,36])
     
     tyra_away_efg <- as.numeric(tyra_away[,16])
     tyra_away_ftr <- as.numeric(tyra_away[,7])
     tyra_away_orb <- as.numeric(tyra_away[,8])
     tyra_away_tov <- as.numeric(tyra_away[,12])
-    tyra_away_oefg <- as.numeric(tyra_away[,35])
-    tyra_away_oftr <- as.numeric(tyra_away[,26])
+    tyra_away_oefg <- as.numeric(tyra_away[,32])
+    tyra_away_oftr <- as.numeric(tyra_away[,23])
     tyra_away_drb <- as.numeric(tyra_away[,9])
-    tyra_away_oto <- as.numeric(tyra_away[,31])
+    tyra_away_otov <- as.numeric(tyra_away[,28])
     
     tyra_home_efg <- as.numeric(tyra_home[,16])
     tyra_home_ftr <- as.numeric(tyra_home[,7])
     tyra_home_orb <- as.numeric(tyra_home[,8])
     tyra_home_tov <- as.numeric(tyra_home[,12])
-    tyra_home_oefg <- as.numeric(tyra_home[,35])
-    tyra_home_oftr <- as.numeric(tyra_home[,26])
+    tyra_home_oefg <- as.numeric(tyra_home[,32])
+    tyra_home_oftr <- as.numeric(tyra_home[,23])
     tyra_home_drb <- as.numeric(tyra_home[,9])
-    tyra_home_oto <- as.numeric(tyra_home[,31])
+    tyra_home_otov <- as.numeric(tyra_home[,28])
     
     tyra_input <- data.frame(tyra_away_oe,tyra_away_de,tyra_away_pa,
                              tyra_away_efg,tyra_away_ftr,tyra_away_orb,tyra_away_tov,
@@ -172,7 +173,8 @@ for (a in a:g) {
     tyra_hwin <- 1 - tyra_awin
     
     holder <- slate[a,1:2]
-    holder$Margin <- tyra_margin
+    holder$Away_Margin <- tyra_margin
+    holder$Home_Margin <- tyra_margin*-1
     holder$Away_score <- tyra_ascore
     holder$Home_score <- tyra_hscore
     holder$Away_win <- tyra_awin
@@ -183,7 +185,8 @@ for (a in a:g) {
 }
 
 tyra_predict <- tyra_predict %>%
-    mutate(across(where(is.numeric)), round, 3)
+    mutate(across(where(is.numeric), round, 3))
+
 
 
 
