@@ -12,6 +12,7 @@
 - DRtg
 - Pace
 
+-----
 
 ## Tyra - Least Squares
 
@@ -35,6 +36,7 @@
 - AST
 - PF
 
+-----
 
 ## Gisele - KNN
 
@@ -51,6 +53,7 @@
 - DRB
 - TOV
 
+-----
 
 ## Kate - Random Forest
 
@@ -69,6 +72,7 @@
 - DRB
 - TOV
 
+-----
 
 ## Cindy - SVM
 
@@ -85,6 +89,7 @@
 - DRB
 - TOV
 
+-----
 
 ## Naomi - NN
 
@@ -101,6 +106,7 @@
 - DRB
 - TOV
 
+-----
 
 ## Adriana - Combination
 
