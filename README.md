@@ -26,7 +26,7 @@ Again, thanks to anyone checking out this work, you can find my contact informat
 -	DRB % (DRB/(DRB + oORB))
 -	TRB % (TRB/(TRB + oTRB))
 -	AST % (AST/FGM)
--	TO % or (TOV/Poss)
+-	TOV % or (TOV/Poss)
 -	STL % (STL/oPoss)
 -	BLK % (BLK/(oFGA-o3PA))
 -	PF % (PF/oPoss)
