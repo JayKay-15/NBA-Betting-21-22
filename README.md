@@ -14,6 +14,8 @@ Finally, the last step is analyzing the models performance. To do this, I look a
 
 Again, thanks to anyone checking out this work, you can find my contact information on my github page if you have any questions or suggestions. Best of luck to anyone else taking on a similar challenge.
 
+Check out the details of each model here: https://github.com/JayKay-15/NBA-Betting-21-22/blob/main/ModelDetails.md
+
 ## Stat Calculations
 
 -	FG % (FGM/FGA)
