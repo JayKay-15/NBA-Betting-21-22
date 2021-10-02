@@ -2,18 +2,21 @@
 #### MODELS ####
 ################
 
-rm(list=ls()[! ls() %in% c("away_final_wt","home_final_wt","league_avg")])
+rm(list=ls()[! ls() %in% c("away_final_wt","home_final_wt","league_avg","standings")])
 
 library(progress)
 
 #### Slate ####
 
-td <- as_date("2021-05-10")
+td <- as_date("2021-05-07")
 
 get_slate <- function(year, month) {
     
     url <- paste0("https://www.basketball-reference.com/leagues/NBA_", year, 
                   "_games-", month, ".html")
+    
+    url <- paste0("https://www.basketball-reference.com/leagues/NBA_2021_games-may.html")
+
     webpage <- read_html(url)
     
     col_names <- webpage %>% 
@@ -39,9 +42,9 @@ get_slate <- function(year, month) {
     slate <- as.data.frame(cbind(game_id, dates, data), stringsAsFactors = FALSE)
     names(slate) <- col_names
     
-    slate <- slate %>% select(2,4,6)
+    slate <- slate %>% select(2,3,4,6)
     slate$date_game <- mdy(slate$date_game)
-    colnames(slate) <- c("date", "away", "home")
+    colnames(slate) <- c("date","time", "away", "home")
     assign("slate", slate, envir = .GlobalEnv)
     
     # # change columns to the correct types
@@ -55,8 +58,10 @@ get_slate <- function(year, month) {
     
 }
 
-slate <- get_slate("2021", "may") ## add date to function? don't have to filter then?
-slate <- slate %>% filter(date == td)
+slate_all <- get_slate("2021", "may") ## add date to function? don't have to filter then?
+slate_all <- slate %>% filter(date == td)
+slate <- slate_all %>% select(1,3,4)
+
 
 master_db <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBAdb/NBAdb1721.xlsx") 
 
@@ -303,7 +308,7 @@ for (a in a:g) {
     knn_win <- predict(knn3(knn_train[,-1], knn_train$Win, k=42), knn_input)
     
     holder <- slate[a,2:3]
-    holder$Away_Margin <-knn_margin
+    holder$Away_Margin <- knn_margin
     holder$Home_Margin <- knn_margin*-1
     holder$Away_Win <- knn_win[,2]
     holder$Home_Win <- knn_win[,1]
@@ -620,7 +625,7 @@ cindy_predict$Model <- "Cindy Crawford - SVM"
 naomi_predict$Model <- "Naomi Campbell - Neural Network"
 adriana_predict$Model <- "Adriana Lima - Combination"
 
-all_models <- bind_rows(kendall_predict, tyra_predict, gisele_predict, 
+all_models <- rbind(kendall_predict, tyra_predict, gisele_predict, 
                     kate_predict, cindy_predict, naomi_predict, adriana_predict)
 
 # #### Removing Outliers ####
@@ -637,4 +642,80 @@ all_models <- bind_rows(kendall_predict, tyra_predict, gisele_predict,
 # 
 # # boxplot of new data
 # boxplot(x_out_rm$Margin)
+
+a_list <- list("TOV","STL","BLK","PF","oFG","oSR2","oFG3","oSR3","oFT","oFTR","oORB",
+               "oDRB","oTRB","oAST","oeFG","oTS","DRtg")
+away_rank_a <- away_final_wt %>%
+    mutate_if(grepl(paste(a_list, collapse = "|"), names(.)), list(rank=~rank( .)))
+
+d_list <- list("FG","SR2","FG3","SR3","FT","FTR","ORB","DRB","TRB","AST",
+               "eFG","TS","ORtg","Pace","oTOV","oSTL","oBLK","oPF")
+away_rank_d <- away_final_wt %>%
+    mutate_if(grepl(paste(d_list, collapse = "|"), names(.)), list(rank=~rank(-.)))
+
+away_rank <- away_final_wt %>%
+    left_join(away_rank_d[,c(1,37:48,59:62,65,66)]) %>%
+    left_join(.,away_rank_a[,c(1,37:50,55:57)], by = "Team") %>%
+    select(1,2,37,3,38,4,39,5,40,6,41,7,42,8,43,9,44,10,45,11,46,12,55,13,56,14,57,15,58,16,47,17,48,
+           18,59,19,60,20,61,21,62,22,63,23,64,24,65,25,66,26,67,27,68,28,49,29,50,30,51,31,52,32,69,33,70,
+           34,53,35,71,36,54)
+
+
+
+a_list <- list("TOV","STL","BLK","PF","oFG","oSR2","oFG3","oSR3","oFT","oFTR","oORB",
+               "oDRB","oTRB","oAST","oeFG","oTS","DRtg")
+home_rank_a <- home_final_wt %>%
+    mutate_if(grepl(paste(a_list, collapse = "|"), names(.)), list(rank=~rank( .)))
+
+d_list <- list("FG","SR2","FG3","SR3","FT","FTR","ORB","DRB","TRB","AST",
+               "eFG","TS","ORtg","Pace","oTOV","oSTL","oBLK","oPF")
+home_rank_d <- home_final_wt %>%
+    mutate_if(grepl(paste(d_list, collapse = "|"), names(.)), list(rank=~rank(-.)))
+
+home_rank <- home_final_wt %>%
+    left_join(home_rank_d[,c(1,37:48,59:62,65,66)]) %>%
+    left_join(.,home_rank_a[,c(1,37:50,55:57)], by = "Team") %>%
+    select(1,2,37,3,38,4,39,5,40,6,41,7,42,8,43,9,44,10,45,11,46,12,55,13,56,14,57,15,58,16,47,17,48,
+           18,59,19,60,20,61,21,62,22,63,23,64,24,65,25,66,26,67,27,68,28,49,29,50,30,51,31,52,32,69,33,70,
+           34,53,35,71,36,54)
+
+
+game_times <- slate_all %>% select(3,4,2)
+game_times$time <- str_sub(string = game_times$time, start = 1, end = str_length(game_times$time)-1)
+game_times[,4:5] <- as.numeric(str_split_fixed(string = game_times$time, pattern = ":", 2))
+
+game_times <- game_times %>%
+    mutate(time = hms::hms(hours = (game_times$V4-1), min = game_times$V5)) %>%
+    select(1:3)
+    
+game_times$time <- format(as.POSIXct(game_times$time), format = "%H:%M")
+
+##### EXPORT TO EXCEL ######
+
+library(XLConnect)
+
+wb <- loadWorkbook("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/viz.xlsx")
+setStyleAction(wb,XLC$"STYLE_ACTION.NONE")
+clearSheet(wb, sheet = "all models")
+clearSheet(wb, sheet = "away rank")
+clearSheet(wb, sheet = "home rank")
+# clearSheet(wb, sheet = "game times")
+writeWorksheet(wb, all_models, "all models")
+writeWorksheet(wb, away_rank, "away rank")
+writeWorksheet(wb, home_rank, "home rank")
+writeWorksheet(wb, standings, "standings")
+writeWorksheet(wb, league_avg, "league")
+writeWorksheet(wb, game_times, "game times")
+saveWorkbook(wb, file = "/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/viz.xlsx")
+
+
+# wb <- createWorkbook()
+# addWorksheet(wb, sheetName = "all models")
+# addWorksheet(wb, sheetName = "away rank")
+# addWorksheet(wb, sheetName = "home rank")
+# writeData(wb, sheet = "all models", x = all_models)
+# writeData(wb, sheet = "away rank", x = away_rank)
+# writeData(wb, sheet = "home rank", x = home_rank)
+# 
+# saveWorkbook(wb, file = "/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/viz.xlsx")
 

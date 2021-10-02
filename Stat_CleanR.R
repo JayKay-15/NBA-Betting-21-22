@@ -948,7 +948,17 @@ colnames(season_final_wt) <- c("Team","FG","SR2","FG3","SR3","FT","FTR","ORB","D
                              "oAST","oTOV","oSTL","oBLK","oPF","oeFG","oTS",
                              "ORtg","DRtg","Pace")
 
+#### Game Details ####
 
+standings_raw <- standings(seasons = 2021, season_types = c("Regular Season"))
+
+standings <- standings_raw %>%
+    select(4,7,9,23,18,26,14,25,95,28,13,24,92,27,12,55)
+
+colnames(standings) <- c("Team","Conference","Division","Record","Win%","L10","Streak",
+                         "Away Record","Away Win%","Away L10","Away Streak",
+                         "Home Record", "Home Win%","Home L10","Home Streak",
+                         "Conference Rank")
 
 
 
