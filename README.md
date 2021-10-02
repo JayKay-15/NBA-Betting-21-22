@@ -1,4 +1,4 @@
-# NBA-Betting-21-22
+# NBA Sport Betting Model 2021-22
 
 Hey y'all thanks for checking out my work. I've been working on this NBA betting model for about a year. I ran a simplier version of this process last year and had some success before having to shut it down.
 
