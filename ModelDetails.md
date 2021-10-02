@@ -2,17 +2,22 @@
 
 ## Kendall - Simple Model
 
+- Predicts scores and win probability using a simple formula and pythagorean win expectation
+
+-----
+
 ### Stats Used
 
 - ORtg
 - DRtg
 - Pace
 
------
-
-- Predicts scores and win probability using a simple formula and pythagorean win expectation
 
 ## Tyra - Least Squares
+
+- Predicts scores and win probability using a Least Squares model
+
+------
 
 ### Stats Used
 
@@ -30,11 +35,12 @@
 - AST
 - PF
 
-------
-
-- Predicts scores and win probability using a Least Squares model
 
 ## Gisele - KNN
+
+- Predicts scores and win probability using a K Nearest Neighbor model
+
+-----
 
 ### Stats Used
 
@@ -45,11 +51,12 @@
 - DRB
 - TOV
 
------
-
-- Predicts scores and win probability using a K Nearest Neighbor model
 
 ## Kate - Random Forest
+
+- Predicts scores and win probability using a Random Forest model
+
+-----
 
 ### Stats Used
 
@@ -62,12 +69,13 @@
 - DRB
 - TOV
 
------
-
-- Predicts scores and win probability using a Random Forest model
 
 ## Cindy - SVM
 
+- Predicts scores and win probability using a Support Vector Machine model
+
+-----
+
 ### Stats Used
 
 - ORtg
@@ -77,12 +85,13 @@
 - DRB
 - TOV
 
------
-
-- Predicts scores and win probability using a Support Vector Machine model
 
 ## Naomi - NN
 
+- Predicts scores and win probability using a Neural Network model
+
+-----
+
 ### Stats Used
 
 - ORtg
@@ -92,15 +101,11 @@
 - DRB
 - TOV
 
------
-
-- Predicts scores and win probability using a Neural Network model
 
 ## Adriana - Combination
 
+- Predicts scores and win probability using an average of the other six models
 
 -----
-
-- Predicts scores and win probability using an average of the other six models
 
 
