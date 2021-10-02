@@ -8,7 +8,7 @@ The basic process and overview of this model goes as follows:
 
 NBA stats are scraped using the NBAstatR library, the stats then go through a cleaning process where advanced stats are calculated, stats are adjusted for opponent and finally weighted toward recent performance.
 
-Once the stats are cleaned, six different models are run to make predicitions for the margin of victor, scores, and win probability. Once the predctions are made they are printed to an Excel spreadsheet where I have a game summary, predictions, and comparison of stats for each game for that day.
+Once the stats are cleaned, six different models are run to make predicitions for the margin of victory, scores, and win probability. Once the predctions are made they are printed to an Excel spreadsheet where I have a game summary, predictions, and comparison of stats for each game for that day.
 
 Finally, the last step is analyzing the models performance. To do this, I look at the models previous selections to determine 'keys' that I use to determine if the models prediction is worth betting on.
 
