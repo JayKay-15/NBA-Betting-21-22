@@ -1,6 +1,6 @@
 # Model Details
 
-## Kendall
+## Kendall - Simple Model
 
 ### Stats Used
 
@@ -10,52 +10,97 @@
 
 -----
 
-- Predicts scores and win probability
-- Simple rating and pace calculcations
-- Pythagorean win expectation for win prob
+- Predicts scores and win probability using a simple formula and pythagorean win expectation
 
-## Tyra
+## Tyra - Least Squares
 
 ### Stats Used
 
 - ORtg
 - DRtg
 - Pace
-- eFG %
-- ORB %
-- DRB %
-- TO %
-- FTR
+- 2FG rate
+- FG%
+- 3FG%
+- eFG%
+- BLK
+- DRB
+- ORB
+- TRB
+- AST
+- PF
 
 ------
 
-- Predicts scores and win probability
-- Linear and logistic regression on database of previous four years of stats
+- Predicts scores and win probability using a Least Squares model
 
-## Kate Moss
+## Gisele - KNN
 
 ### Stats Used
 
-- FG %
-- SR2 %
-- FG3 %
-- SR3 %
-- FT %
-- FT/Foul
-- ORB %
-- DRB %
-- TO %
-- Foul %
+- ORtg
+- DRtg
+- eFG%
+- ORB
+- DRB
+- TOV
 
 -----
 
-- Predicts scores
-- Simple Monte Carlo simulation
+- Predicts scores and win probability using a K Nearest Neighbor model
 
-## Gisele
+## Kate - Random Forest
 
 ### Stats Used
 
-- Combination of Kendall, Tyra and Kate Moss for score predictions
-- Combination of Kendall and Tyra for win probability
+- ORtg
+- DRtg
+- Pace
+- eFG%
+- FTR
+- ORB
+- DRB
+- TOV
+
+-----
+
+- Predicts scores and win probability using a Random Forest model
+
+## Cindy - SVM
+
+### Stats Used
+
+- ORtg
+- DRtg
+- eFG%
+- ORB
+- DRB
+- TOV
+
+-----
+
+- Predicts scores and win probability using a Support Vector Machine model
+
+## Naomi - NN
+
+### Stats Used
+
+- ORtg
+- DRtg
+- eFG%
+- ORB
+- DRB
+- TOV
+
+-----
+
+- Predicts scores and win probability using a Neural Network model
+
+## Adriana - Combination
+
+
+-----
+
+- Predicts scores and win probability using an average of the other six models
+
 
