@@ -1,4 +1,20 @@
-# NBA-Betting-21-22
+# NBA Sport Betting Model 2021-22
+
+Hey y'all thanks for checking out my work. I've been working on this NBA betting model for about a year. I ran a simplier version of this process last year and had some success before having to shut it down.
+
+For the 2021-22 NBA season I've added more predcitive models, fixed minor errors in the data cleaning and stat calculation code, and converted my results tracking to R.
+
+The basic process and overview of this model goes as follows:
+
+NBA stats are scraped using the NBAstatR library, the stats then go through a cleaning process where advanced stats are calculated, stats are adjusted for opponent and finally weighted toward recent performance.
+
+Once the stats are cleaned, six different models are run to make predicitions for the margin of victory, scores, and win probability. Once the predctions are made they are printed to an Excel spreadsheet where I have a game summary, predictions, and comparison of stats for each game for that day.
+
+Finally, the last step is analyzing the models performance. To do this, I look at the models previous selections to determine 'keys' that I use to determine if the models prediction is worth betting on.
+
+Again, thanks to anyone checking out this work, you can find my contact information on my github page if you have any questions or suggestions. Best of luck to anyone else taking on a similar challenge.
+
+Check out the details of each model here: https://github.com/JayKay-15/NBA-Betting-21-22/blob/main/ModelDetails.md
 
 ## Stat Calculations
 
@@ -12,7 +28,7 @@
 -	DRB % (DRB/(DRB + oORB))
 -	TRB % (TRB/(TRB + oTRB))
 -	AST % (AST/FGM)
--	TO % or (TOV/Poss)
+-	TOV % or (TOV/Poss)
 -	STL % (STL/oPoss)
 -	BLK % (BLK/(oFGA-o3PA))
 -	PF % (PF/oPoss)
