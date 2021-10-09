@@ -9,9 +9,9 @@ yd <- as_date("2021-05-10")
 
 #### RESULTS BOOK ####
 
-xl_results_book <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Results.xlsx")
+xl_results_book <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Results2.xlsx")
 
-yesterday_plays <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Plays.xlsx")
+yesterday_plays <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Plays2.xlsx")
 
 game_logs(seasons = 2021, result_types = c("team", "players"))
 
@@ -31,20 +31,23 @@ results_book <- gl %>%
     filter(Date == yd) %>%
     arrange(GameID, Loc)
 
-yesterday_plays <- yesterday_plays[4:34]
+yesterday_plays <- yesterday_plays[4:63]
 
 results_book <- results_book %>%
     left_join(yesterday_plays, by = "Team")
 
 results_book <- results_book %>%
     mutate(Margin = Score - oppScore) %>%
+    mutate(Total = Score + oppScore) %>%
     mutate(ATS_Margin = Margin + Spread) %>%
     mutate(ATS_Result = if_else((Margin + Spread) == 0, 0, if_else(ATS_Margin > 0, 1, -1.1))) %>%
     mutate(ML_Result = case_when(ML > 0 & (Score - oppScore) > 0 ~ ML/100, 
-                                  ML > 0 & (Score - oppScore) < 0 ~ -1,
-                                  (Score - oppScore) > 0 ~ 1,
-                                  (Score - oppScore) < 0 ~ ML/100)) %>%
-    select(1:9, 38:41, 10:37)
+                                 ML > 0 & (Score - oppScore) < 0 ~ -1,
+                                 (Score - oppScore) > 0 ~ 1,
+                                 (Score - oppScore) < 0 ~ ML/100)) %>%
+    mutate(Over_Result = if_else(Total > OU, 1, -1.1)) %>%
+    mutate(Under_Result = if_else(Total < OU, 1, -1.1))
+    # select(1:9, 38:41, 10:37)
 
 
 
@@ -120,8 +123,8 @@ report_builder <- function(Num, Result1, Model1, Model2, Model3, Model4, Model5,
         
         results_book %>% 
             filter(.data[[Model1]] > 0 & .data[[Model2]] > 0
-                                                 & .data[[Model3]] > 0
-                                                 & .data[[Model4]] > 0) %>%
+                   & .data[[Model3]] > 0
+                   & .data[[Model4]] > 0) %>%
             mutate(Value = .data[[Model1]]) %>%
             mutate(Result = .data[[Result1]]) %>%
             select(3,56,57) %>%
@@ -134,9 +137,9 @@ report_builder <- function(Num, Result1, Model1, Model2, Model3, Model4, Model5,
         
         results_book %>% 
             filter(.data[[Model1]] > 0 & .data[[Model2]] > 0
-                                                 & .data[[Model3]] > 0
-                                                 & .data[[Model4]] > 0
-                                                 & .data[[Model5]] > 0) %>%
+                   & .data[[Model3]] > 0
+                   & .data[[Model4]] > 0
+                   & .data[[Model5]] > 0) %>%
             mutate(Value = .data[[Model1]]) %>%
             mutate(Result = .data[[Result1]]) %>%
             select(3,56,57) %>%
@@ -149,10 +152,10 @@ report_builder <- function(Num, Result1, Model1, Model2, Model3, Model4, Model5,
         
         results_book %>% 
             filter(.data[[Model1]] > 0 & .data[[Model2]] > 0
-                                                 & data[[Model3]] > 0
-                                                 & .data[[Model4]] > 0 
-                                                 & .data[[Model5]] > 0 
-                                                 & .data[[Model6]] > 0) %>%
+                   & data[[Model3]] > 0
+                   & .data[[Model4]] > 0 
+                   & .data[[Model5]] > 0 
+                   & .data[[Model6]] > 0) %>%
             mutate(Value = .data[[Model1]]) %>%
             mutate(Result = .data[[Result1]]) %>%
             select(3,56,57) %>%
@@ -165,11 +168,11 @@ report_builder <- function(Num, Result1, Model1, Model2, Model3, Model4, Model5,
         
         results_book %>% 
             filter(.data[[Model1]] > 0 & .data[[Model2]] > 0
-                                                 & .data[[Model3]] > 0
-                                                 & .data[[Model4]] > 0
-                                                 & .data[[Model5]] > 0 
-                                                 & .data[[Model6]] > 0 
-                                                 & .data[[Model7]] > 0) %>%
+                   & .data[[Model3]] > 0
+                   & .data[[Model4]] > 0
+                   & .data[[Model5]] > 0 
+                   & .data[[Model6]] > 0 
+                   & .data[[Model7]] > 0) %>%
             mutate(Value = .data[[Model1]]) %>%
             mutate(Result = .data[[Result1]]) %>%
             select(3,56,57) %>%
@@ -183,18 +186,18 @@ report_builder <- function(Num, Result1, Model1, Model2, Model3, Model4, Model5,
 }
 
 spread_rb <- report_builder(7, "Kendall_Spread_Result", 
-                     "Kendall_Spread_Edge", "Tyra_Spread_Edge","Gisele_Spread_Result",
-                     "Kate_Spread_Edge", "Cindy_Spread_Edge", "Naomi_Spread_Edge",
-                     "Adriana_Spread_Edge")
+                            "Kendall_Spread_Edge", "Tyra_Spread_Edge","Gisele_Spread_Result",
+                            "Kate_Spread_Edge", "Cindy_Spread_Edge", "Naomi_Spread_Edge",
+                            "Adriana_Spread_Edge")
 spread_rb
 
 spread_rp <- report_peak(rb)
 spread_rp
 
 ml_rb <- report_builder(7, "Kendall_ML_Result", 
-                     "Kendall_ML_Edge", "Tyra_ML_Edge","Gisele_ML_Result",
-                     "Kate_ML_Edge", "Cindy_ML_Edge", "Naomi_ML_Edge",
-                     "Adriana_ML_Edge")
+                        "Kendall_ML_Edge", "Tyra_ML_Edge","Gisele_ML_Result",
+                        "Kate_ML_Edge", "Cindy_ML_Edge", "Naomi_ML_Edge",
+                        "Adriana_ML_Edge")
 ml_rb
 
 ml_rp <- report_peak(rb)
@@ -222,7 +225,7 @@ plays_a <- plays_a %>%
     left_join(., adriana_predict, by = c("Team" = "away"))
 
 plays_a <- plays_a %>%
-    select(1:5, 7, 9, 13, 15, 19, 21, 25, 27, 31, 33, 37, 39, 43, 45)
+    select(1:5, 7, 9, 11, 15, 17, 19, 23, 25, 27, 31, 33, 35, 39, 41, 43, 47, 49, 51, 55, 57, 59)
 
 colnames(plays_a) <- c("game", "Date", "Loc", "oppTeam", "Team", 
                        "Kendall_Margin", "Kendall_Win", "Tyra_Margin", "Tyra_Win",
