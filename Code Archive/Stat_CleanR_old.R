@@ -8,7 +8,7 @@ pacman::p_load(tidyverse, readxl, lubridate, openxlsx, nbastatR, rvest)
 rm(list=ls())
 setwd("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/")
 
-cur_date <- as_date("2021-12-17")
+# cur_date <- as_date("2021-11-29")
 
 ### Pull game logs & arrange by date
 
@@ -38,8 +38,8 @@ colnames(gl) <- c("Date", "teamLoc", "teamName", "opptName", "teamRslt",
 
 ## Filter date if needed
 
-gl <- gl %>%
-    filter(Date < cur_date)
+# gl <- gl %>%
+#     filter(Date < cur_date)
 
 # Filter for home/away 
 
@@ -958,10 +958,10 @@ colnames(season_final_wt) <- c("Team","FG","SR2","FG3","SR3","FT","FTR","ORB","D
 standings_raw <- standings(seasons = 2022, season_types = c("Regular Season"))
 
 standings <- standings_raw %>%
-    select("nameTeam","nameConference","nameDivison","recordOverall","pctWinTeam","recordLast10","slugStreakCurrent",
-           "recordAway","recordAwayWinPct","recordLast10Away","slugStreakAwayCurrent",
-           "recordHome","recordHomeWinPct","recordLast10Home","slugStreakHomeCurrent",
-           "rankPlayoffs")
+    select(4,7,8,22,17,25,13,
+           24,91,27,12,
+           23,88,26,11,
+           51)
 
 colnames(standings) <- c("Team","Conference","Division","Record","Win%","L10","Streak",
                          "Away Record","Away Win%","Away L10","Away Streak",

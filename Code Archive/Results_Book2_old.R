@@ -1,11 +1,9 @@
 ######## RESULTS & PERFORMANCE ########
 
-rm(list=ls()[! ls() %in% c("away_final_wt","home_final_wt","league_avg","standings",
-                           "kendall_predict", "tyra_predict", "gisele_predict",
-                           "kate_predict", "cindy_predict", "naomi_predict",
-                           "adriana_predict", "all_models", "slate")])
-
-library(openxlsx)
+# rm(list=ls()[! ls() %in% c("away_final_wt","home_final_wt","league_avg","standings",
+#                            "kendall_predict", "tyra_predict", "gisele_predict",
+#                            "kate_predict", "cindy_predict", "naomi_predict",
+#                            "adriana_predict", "all_models", "slate")])
 
 yd <- as_date("2021-12-15")
 
@@ -58,10 +56,10 @@ adriana_under <- .0
 
 #### RESULTS BOOK ####
 
-xl_results_book <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Results.xlsx")
+xl_results_book <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Results2.xlsx")
 xl_results_book$Date <- as_date(xl_results_book$Date)
 
-yesterday_plays <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Plays.xlsx")
+yesterday_plays <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Plays2.xlsx")
 
 game_logs(seasons = 2022, result_types = c("team", "players"))
 
@@ -326,31 +324,54 @@ plays$Over_Play <- with(plays, if_else(
 #                                       # & Adriana_Under_Edge > adriana_under
 #                                        , 1, 0))
 
+# plays %>%
+#     filter(Spread_Play == 1) %>%
+#     select(1,2,4,6)
+# 
+# plays %>%
+#     filter(Spread2_Play == 1) %>%
+#     select(1,2,4,6)
+# 
+# plays %>%
+#     filter(ML_Play == 1) %>%
+#     select(1,2,4,7)
+# 
+# plays %>%
+#     filter(Over_Play == 1 & Loc == "H") %>%
+#     select(1,2,4,8)
+# 
+# plays %>%
+#     filter(Under_Play == 1 & Loc == "H") %>%
+#     select(1,2,4,8)
+
 ##### Fix Output #####
 
 plays[, c(29:32,62:66)] <- sapply(plays[, c(29:32,62:66)], as.numeric)
 
 ##### EXPORT TO EXCEL ######
+detach("package:XLConnect", unload = TRUE)
+library(openxlsx)
 
-fn <- "Results"
+fn <- "Results2"
 u <- paste0("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/",fn,".xlsx")
 
-wb <- loadWorkbook("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Results.xlsx")
+wb <- loadWorkbook("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Results2.xlsx")
 writeData(wb, "Results Book", x = results_book)
 saveWorkbook(wb, u, overwrite = T)
 
 
-fn2 <- "Plays"
+fn2 <- "Plays2"
 u2 <- paste0("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/",fn2,".xlsx")
 
-wb <- loadWorkbook("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Plays.xlsx")
+wb <- loadWorkbook("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Plays2.xlsx")
 deleteData(wb, "Plays", gridExpand = T, cols = 1:76, rows = 1:50)
 writeData(wb, "Plays", x = plays)
 saveWorkbook(wb, u2, overwrite = T)
 
+
 #### Creating workbook
 
-# fn <- "Results"
+# fn <- "Results2"
 # u <- paste0("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/",fn,".xlsx")
 # 
 # wb <- createWorkbook()
@@ -358,12 +379,181 @@ saveWorkbook(wb, u2, overwrite = T)
 # writeData(wb, sheet = "Results Book", x = results_book)
 # saveWorkbook(wb, file = u)
 # 
-# fn2 <- "Plays"
+# fn2 <- "Plays2"
 # u2 <- paste0("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/",fn2,".xlsx")
 # 
 # wb <- createWorkbook()
 # addWorksheet(wb, sheetName = "Plays")
 # writeData(wb, sheet = "Plays", x = plays)
 # saveWorkbook(wb, file = u2)
+
+
+
+#### Using XLConnect 
+
+# library(XLConnect)
+# 
+# fn <- "Results2"
+# u <- paste0("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/",fn,".xlsx")
+# 
+# wb <- loadWorkbook("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Results2.xlsx")
+# # setStyleAction(wb,XLC$"STYLE_ACTION.NONE")
+# clearSheet(wb, sheet = "Results Book")
+# writeWorksheet(wb, results_book, "Results Book")
+# saveWorkbook(wb, file = u)
+# 
+# 
+# fn2 <- "Plays2"
+# u2 <- paste0("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/",fn2,".xlsx")
+# 
+# wb <- loadWorkbook("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Plays2.xlsx")
+# # setStyleAction(wb,XLC$"STYLE_ACTION.NONE")
+# clearSheet(wb, sheet = "Plays")
+# writeWorksheet(wb, plays, "Plays")
+# saveWorkbook(wb, file = u2)
+
+
+
+##### CREATE PERFORMANCE & KEYS #### -- Old 
+
+# report_peak <- function(x) {
+#     x[c(1:which.max(x$Cume)),]
+# }
+# 
+# report_builder <- function(Num, Result1, Model1, Model2, Model3, Model4, Model5, Model6, Model7) {
+#     
+#     if (Num == 1) {
+#         results_book %>% 
+#             filter(.data[[Model1]] > 0) %>%
+#             mutate(Value = .data[[Model1]]) %>%
+#             mutate(Result = .data[[Result1]]) %>%
+#             select(3,116,117) %>%
+#             arrange(desc(Value)) %>%
+#             mutate(Cume = cumsum(Result)) %>%
+#             mutate(gameNum = row_number()) %>%
+#             select(1,5,2,3,4)
+#         
+#     } else if (Num == 2) {
+#         
+#         results_book %>% 
+#             filter(.data[[Model1]] > 0 & .data[[Model2]] > 0) %>%
+#             mutate(Value = .data[[Model1]]) %>%
+#             mutate(Result = .data[[Result1]]) %>%
+#             select(3,116,117) %>%
+#             arrange(desc(Value)) %>%
+#             mutate(Cume = cumsum(Result)) %>%
+#             mutate(gameNum = row_number()) %>%
+#             select(1,5,2,3,4)
+#         
+#     } else if (Num == 3) {
+#         
+#         results_book %>% 
+#             filter(.data[[Model1]] > 0 & .data[[Model2]] > 0 & .data[[Model3]] > 0) %>%
+#             mutate(Value = .data[[Model1]]) %>%
+#             mutate(Result = .data[[Result1]]) %>%
+#             select(3,116,117) %>%
+#             arrange(desc(Value)) %>%
+#             mutate(Cume = cumsum(Result)) %>%
+#             mutate(gameNum = row_number()) %>%
+#             select(1,5,2,3,4)
+#         
+#     } else if (Num == 4) {
+#         
+#         results_book %>% 
+#             filter(.data[[Model1]] > 0 & .data[[Model2]] > 0
+#                    & .data[[Model3]] > 0
+#                    & .data[[Model4]] > 0) %>%
+#             mutate(Value = .data[[Model1]]) %>%
+#             mutate(Result = .data[[Result1]]) %>%
+#             select(3,116,117) %>%
+#             arrange(desc(Value)) %>%
+#             mutate(Cume = cumsum(Result)) %>%
+#             mutate(gameNum = row_number()) %>%
+#             select(1,5,2,3,4)
+#         
+#     } else if (Num == 5) {
+#         
+#         results_book %>% 
+#             filter(.data[[Model1]] > 0 & .data[[Model2]] > 0
+#                    & .data[[Model3]] > 0
+#                    & .data[[Model4]] > 0
+#                    & .data[[Model5]] > 0) %>%
+#             mutate(Value = .data[[Model1]]) %>%
+#             mutate(Result = .data[[Result1]]) %>%
+#             select(3,116,117) %>%
+#             arrange(desc(Value)) %>%
+#             mutate(Cume = cumsum(Result)) %>%
+#             mutate(gameNum = row_number()) %>%
+#             select(1,5,2,3,4)
+#         
+#     } else if (Num == 6) {
+#         
+#         results_book %>% 
+#             filter(.data[[Model1]] > 0 & .data[[Model2]] > 0
+#                    & data[[Model3]] > 0
+#                    & .data[[Model4]] > 0 
+#                    & .data[[Model5]] > 0 
+#                    & .data[[Model6]] > 0) %>%
+#             mutate(Value = .data[[Model1]]) %>%
+#             mutate(Result = .data[[Result1]]) %>%
+#             select(3,116,117) %>%
+#             arrange(desc(Value)) %>%
+#             mutate(Cume = cumsum(Result)) %>%
+#             mutate(gameNum = row_number()) %>%
+#             select(1,5,2,3,4)
+#         
+#     } else if (Num == 7) {
+#         
+#         results_book %>% 
+#             filter(.data[[Model1]] > 0 & .data[[Model2]] > 0
+#                    & .data[[Model3]] > 0
+#                    & .data[[Model4]] > 0
+#                    & .data[[Model5]] > 0 
+#                    & .data[[Model6]] > 0 
+#                    & .data[[Model7]] > 0) %>%
+#             mutate(Value = .data[[Model1]]) %>%
+#             mutate(Result = .data[[Result1]]) %>%
+#             select(3,116,117) %>%
+#             arrange(desc(Value)) %>%
+#             mutate(Cume = cumsum(Result)) %>%
+#             mutate(gameNum = row_number()) %>%
+#             select(1,5,2,3,4)
+#         
+#     }
+#     
+# }
+# 
+# spread_rb <- report_builder(7, "Kendall_Spread2_Result",
+#                             "Kendall_Spread2_Edge", "Tyra_Spread2_Edge","Gisele_Spread2_Result",
+#                             "Kate_Spread2_Edge", "Cindy_Spread2_Edge", "Naomi_Spread2_Edge",
+#                             "Adriana_Spread2_Edge")
+# spread_rb
+# 
+# spread_rp <- report_peak(spread_rb)
+# spread_rp
+# 
+# ml_rb <- report_builder(7, "Kendall_ML_Result", 
+#                         "Kendall_ML_Edge", "Tyra_ML_Edge","Gisele_ML_Result",
+#                         "Kate_ML_Edge", "Cindy_ML_Edge", "Naomi_ML_Edge",
+#                         "Adriana_ML_Edge")
+# ml_rb
+# 
+# ml_rp <- report_peak(ml_rb)
+# ml_rp
+# 
+# model_key <- tail(spread_rp, 1) %>%
+#     select(3)
+
+
+
+
+
+
+
+
+
+
+
+
 
 

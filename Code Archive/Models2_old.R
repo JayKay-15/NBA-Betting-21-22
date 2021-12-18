@@ -2,65 +2,82 @@
 #### MODELS ####
 ################
 
-rm(list=ls()[! ls() %in% c("away_final_wt","home_final_wt","league_avg","standings")])
+# rm(list=ls()[! ls() %in% c("away_final_wt","home_final_wt","league_avg","standings")])
 
 library(progress)
 
 #### Slate ####
 
-td <- as_date("2021-05-10")
+td <- as_date(Sys.Date())
 
-get_slate <- function(year, month) {
-    
-    url <- paste0("https://www.basketball-reference.com/leagues/NBA_", year, 
-                  "_games-", month, ".html")
-    
-    url <- paste0("https://www.basketball-reference.com/leagues/NBA_2021_games-may.html")
-    
-    webpage <- read_html(url)
-    
-    col_names <- webpage %>% 
-        html_nodes("table#schedule > thead > tr > th") %>% 
-        html_attr("data-stat")    
-    col_names <- c("game_id", col_names)
-    
-    dates <- webpage %>% 
-        html_nodes("table#schedule > tbody > tr > th") %>% 
-        html_text()
-    dates <- dates[dates != "Playoffs"]
-    
-    game_id <- webpage %>% 
-        html_nodes("table#schedule > tbody > tr > th") %>%
-        html_attr("csk")
-    game_id <- game_id[!is.na(game_id)]
-    
-    data <- webpage %>% 
-        html_nodes("table#schedule > tbody > tr > td") %>% 
-        html_text() %>%
-        matrix(ncol = length(col_names) - 2, byrow = TRUE)
-    
-    slate <- as.data.frame(cbind(game_id, dates, data), stringsAsFactors = FALSE)
-    names(slate) <- col_names
-    
-    slate <- slate %>% select(2,3,4,6)
-    slate$date_game <- mdy(slate$date_game)
-    colnames(slate) <- c("date","time", "away", "home")
-    assign("slate", slate, envir = .GlobalEnv)
-    
-    # # change columns to the correct types
-    # df$visitor_pts <- as.numeric(df$visitor_pts)
-    # df$home_pts    <- as.numeric(df$home_pts)
-    # df$attendance  <- as.numeric(gsub(",", "", df$attendance))
-    # df$date_game   <- mdy(df$date_game)
-    # 
-    # # drop boxscore column
-    # df$box_score_text <- NULL
-    
-}
+## If not current day
+# td <- as_date("2021-11-19")
 
-slate_all <- get_slate("2021", "may") ## add date to function? don't have to filter then?
-slate_all <- slate %>% filter(date == td)
-slate <- slate_all %>% select(1,3,4)
+sched <- nbastatR::current_schedule()
+
+slate <- sched %>%
+    filter(dateGame == td) %>%
+    mutate(gameTime = hms::as_hms(datetimeGame - 18000)) %>%
+    select(4,29,24,2,34)
+
+colnames(slate) <- c("idGame","Away","Home","Date","Game Time")
+
+slate <- slate %>%
+    mutate(across(where(is.character), str_replace_all, pattern = "Los Angeles Clippers", replacement = "LA Clippers"))
+
+#### Old Slate ####
+
+# get_slate <- function(year, month) {
+#     
+#     url <- paste0("https://www.basketball-reference.com/leagues/NBA_", year, 
+#                   "_games-", month, ".html")
+#     
+#     url <- paste0("https://www.basketball-reference.com/leagues/NBA_2021_games-may.html")
+#     
+#     webpage <- read_html(url)
+#     
+#     col_names <- webpage %>% 
+#         html_nodes("table#schedule > thead > tr > th") %>% 
+#         html_attr("data-stat")    
+#     col_names <- c("game_id", col_names)
+#     
+#     dates <- webpage %>% 
+#         html_nodes("table#schedule > tbody > tr > th") %>% 
+#         html_text()
+#     dates <- dates[dates != "Playoffs"]
+#     
+#     game_id <- webpage %>% 
+#         html_nodes("table#schedule > tbody > tr > th") %>%
+#         html_attr("csk")
+#     game_id <- game_id[!is.na(game_id)]
+#     
+#     data <- webpage %>% 
+#         html_nodes("table#schedule > tbody > tr > td") %>% 
+#         html_text() %>%
+#         matrix(ncol = length(col_names) - 2, byrow = TRUE)
+#     
+#     slate <- as.data.frame(cbind(game_id, dates, data), stringsAsFactors = FALSE)
+#     names(slate) <- col_names
+#     
+#     slate <- slate %>% select(2,3,4,6)
+#     slate$date_game <- mdy(slate$date_game)
+#     colnames(slate) <- c("date","time", "away", "home")
+#     assign("slate", slate, envir = .GlobalEnv)
+#     
+#     # # change columns to the correct types
+#     # df$visitor_pts <- as.numeric(df$visitor_pts)
+#     # df$home_pts    <- as.numeric(df$home_pts)
+#     # df$attendance  <- as.numeric(gsub(",", "", df$attendance))
+#     # df$date_game   <- mdy(df$date_game)
+#     # 
+#     # # drop boxscore column
+#     # df$box_score_text <- NULL
+#     
+# }
+# 
+# slate_all <- get_slate("2021", "may") ## add date to function? don't have to filter then?
+# slate_all <- slate %>% filter(date == td)
+# slate <- slate_all %>% select(1,3,4)
 
 
 master_db <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBAdb/NBAdb1721.xlsx") 
@@ -745,7 +762,7 @@ naomi_predict <- naomi_predict %>%
 
 #### Adriana #### - Combo
 
-adriana_predict <- slate[,-1]
+adriana_predict <- slate[c(2,3)]
 
 adriana_predict$Away_Margin <- round(rowMeans(cbind(kendall_predict[,3], tyra_predict[,3], gisele_predict[,3], 
                                                     kate_predict[,3], cindy_predict[,3], naomi_predict[,3])),3)
@@ -798,71 +815,61 @@ all_models <- rbind(kendall_predict, tyra_predict, gisele_predict,
 
 #### ranking ####
 
+a_list <- list("TOV","STL","BLK","PF","oFG","oSR2","oFG3","oSR3","oFT","oFTR","oORB",
+               "oDRB","oTRB","oAST","oeFG","oTS","DRtg")
+away_rank_a <- away_final_wt %>%
+    mutate_if(grepl(paste(a_list, collapse = "|"), names(.)), list(rank=~rank( .)))
 
-# a_list <- list("TOV","STL","BLK","PF","oFG","oSR2","oFG3","oSR3","oFT","oFTR","oORB",
-#                "oDRB","oTRB","oAST","oeFG","oTS","DRtg")
-# away_rank_a <- away_final_wt %>%
-#     mutate_if(grepl(paste(a_list, collapse = "|"), names(.)), list(rank=~rank( .)))
-# 
-# d_list <- list("FG","SR2","FG3","SR3","FT","FTR","ORB","DRB","TRB","AST",
-#                "eFG","TS","ORtg","Pace","oTOV","oSTL","oBLK","oPF")
-# away_rank_d <- away_final_wt %>%
-#     mutate_if(grepl(paste(d_list, collapse = "|"), names(.)), list(rank=~rank(-.)))
-# 
-# away_rank <- away_final_wt %>%
-#     left_join(away_rank_d[,c(1,37:48,59:62,65,66)]) %>%
-#     left_join(.,away_rank_a[,c(1,37:50,55:57)], by = "Team") %>%
-#     select(1,2,37,3,38,4,39,5,40,6,41,7,42,8,43,9,44,10,45,11,46,12,55,13,56,14,57,15,58,16,47,17,48,
-#            18,59,19,60,20,61,21,62,22,63,23,64,24,65,25,66,26,67,27,68,28,49,29,50,30,51,31,52,32,69,33,70,
-#            34,53,35,71,36,54)
-# 
-# 
-# 
-# a_list <- list("TOV","STL","BLK","PF","oFG","oSR2","oFG3","oSR3","oFT","oFTR","oORB",
-#                "oDRB","oTRB","oAST","oeFG","oTS","DRtg")
-# home_rank_a <- home_final_wt %>%
-#     mutate_if(grepl(paste(a_list, collapse = "|"), names(.)), list(rank=~rank( .)))
-# 
-# d_list <- list("FG","SR2","FG3","SR3","FT","FTR","ORB","DRB","TRB","AST",
-#                "eFG","TS","ORtg","Pace","oTOV","oSTL","oBLK","oPF")
-# home_rank_d <- home_final_wt %>%
-#     mutate_if(grepl(paste(d_list, collapse = "|"), names(.)), list(rank=~rank(-.)))
-# 
-# home_rank <- home_final_wt %>%
-#     left_join(home_rank_d[,c(1,37:48,59:62,65,66)]) %>%
-#     left_join(.,home_rank_a[,c(1,37:50,55:57)], by = "Team") %>%
-#     select(1,2,37,3,38,4,39,5,40,6,41,7,42,8,43,9,44,10,45,11,46,12,55,13,56,14,57,15,58,16,47,17,48,
-#            18,59,19,60,20,61,21,62,22,63,23,64,24,65,25,66,26,67,27,68,28,49,29,50,30,51,31,52,32,69,33,70,
-#            34,53,35,71,36,54)
-# 
-# 
-# game_times <- slate_all %>% select(3,4,2)
-# game_times$time <- str_sub(string = game_times$time, start = 1, end = str_length(game_times$time)-1)
-# game_times[,4:5] <- as.numeric(str_split_fixed(string = game_times$time, pattern = ":", 2))
-# 
-# game_times <- game_times %>%
-#     mutate(time = hms::hms(hours = (game_times$V4-1), min = game_times$V5)) %>%
-#     select(1:3)
-# 
-# game_times$time <- format(as.POSIXct(game_times$time), format = "%H:%M")
+d_list <- list("FG","SR2","FG3","SR3","FT","FTR","ORB","DRB","TRB","AST",
+               "eFG","TS","ORtg","Pace","oTOV","oSTL","oBLK","oPF")
+away_rank_d <- away_final_wt %>%
+    mutate_if(grepl(paste(d_list, collapse = "|"), names(.)), list(rank=~rank(-.)))
+
+away_rank <- away_final_wt %>%
+    left_join(away_rank_d[,c(1,37:48,59:62,65,66)]) %>%
+    left_join(.,away_rank_a[,c(1,37:50,55:57)], by = "Team") %>%
+    select(1,2,37,3,38,4,39,5,40,6,41,7,42,8,43,9,44,10,45,11,46,12,55,13,56,14,57,15,58,16,47,17,48,
+           18,59,19,60,20,61,21,62,22,63,23,64,24,65,25,66,26,67,27,68,28,49,29,50,30,51,31,52,32,69,33,70,
+           34,53,35,71,36,54)
+
+
+
+a_list <- list("TOV","STL","BLK","PF","oFG","oSR2","oFG3","oSR3","oFT","oFTR","oORB",
+               "oDRB","oTRB","oAST","oeFG","oTS","DRtg")
+home_rank_a <- home_final_wt %>%
+    mutate_if(grepl(paste(a_list, collapse = "|"), names(.)), list(rank=~rank( .)))
+
+d_list <- list("FG","SR2","FG3","SR3","FT","FTR","ORB","DRB","TRB","AST",
+               "eFG","TS","ORtg","Pace","oTOV","oSTL","oBLK","oPF")
+home_rank_d <- home_final_wt %>%
+    mutate_if(grepl(paste(d_list, collapse = "|"), names(.)), list(rank=~rank(-.)))
+
+home_rank <- home_final_wt %>%
+    left_join(home_rank_d[,c(1,37:48,59:62,65,66)]) %>%
+    left_join(.,home_rank_a[,c(1,37:50,55:57)], by = "Team") %>%
+    select(1,2,37,3,38,4,39,5,40,6,41,7,42,8,43,9,44,10,45,11,46,12,55,13,56,14,57,15,58,16,47,17,48,
+           18,59,19,60,20,61,21,62,22,63,23,64,24,65,25,66,26,67,27,68,28,49,29,50,30,51,31,52,32,69,33,70,
+           34,53,35,71,36,54)
+
+game_times <- slate %>% select(2,3,5)
 
 ##### EXPORT TO EXCEL ######
 
-# library(XLConnect)
-# 
-# wb <- loadWorkbook("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Summary2.xlsx")
-# setStyleAction(wb,XLC$"STYLE_ACTION.NONE")
-# clearSheet(wb, sheet = "all models")
-# clearSheet(wb, sheet = "away rank")
-# clearSheet(wb, sheet = "home rank")
-# # clearSheet(wb, sheet = "game times")
-# writeWorksheet(wb, all_models, "all models")
-# writeWorksheet(wb, away_rank, "away rank")
-# writeWorksheet(wb, home_rank, "home rank")
-# writeWorksheet(wb, standings, "standings")
-# writeWorksheet(wb, league_avg, "league")
-# writeWorksheet(wb, game_times, "game times")
-# saveWorkbook(wb, file = "/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Summary2.xlsx")
+library(XLConnect)
+
+wb <- loadWorkbook("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Summary2.xlsx")
+setStyleAction(wb,XLC$"STYLE_ACTION.NONE")
+clearSheet(wb, sheet = "all models")
+clearSheet(wb, sheet = "away rank")
+clearSheet(wb, sheet = "home rank")
+# clearSheet(wb, sheet = "game times")
+writeWorksheet(wb, all_models, "all models")
+writeWorksheet(wb, away_rank, "away rank")
+writeWorksheet(wb, home_rank, "home rank")
+writeWorksheet(wb, standings, "standings")
+writeWorksheet(wb, league_avg, "league")
+writeWorksheet(wb, game_times, "game times")
+saveWorkbook(wb, file = "/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Summary2.xlsx")
 
 
 # wb <- createWorkbook()
