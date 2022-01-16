@@ -8,7 +8,7 @@ pacman::p_load(tidyverse, readxl, lubridate, openxlsx, nbastatR, rvest)
 rm(list=ls())
 setwd("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/")
 
-cur_date <- as_date("2021-12-17")
+# cur_date <- as_date("2021-12-21")
 
 ### Pull game logs & arrange by date
 
@@ -38,8 +38,8 @@ colnames(gl) <- c("Date", "teamLoc", "teamName", "opptName", "teamRslt",
 
 ## Filter date if needed
 
-gl <- gl %>%
-    filter(Date < cur_date)
+# gl <- gl %>%
+#     filter(Date < cur_date)
 
 # Filter for home/away 
 
@@ -967,14 +967,3 @@ colnames(standings) <- c("Team","Conference","Division","Record","Win%","L10","S
                          "Away Record","Away Win%","Away L10","Away Streak",
                          "Home Record", "Home Win%","Home L10","Home Streak",
                          "Conference Rank")
-
-
-
-
-
-
-
-
-
-
-
