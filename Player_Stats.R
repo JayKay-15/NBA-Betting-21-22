@@ -4,6 +4,8 @@ pacman::p_load(tidyverse, readxl, lubridate, openxlsx, nbastatR, rvest)
 rm(list=ls())
 setwd("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/")
 
+Sys.setenv("VROOM_CONNECTION_SIZE" = 131072 * 2)
+
 game_logs(seasons = 2022, result_types = c("team","players"))
 
 dataGameLogsPlayer <- dataGameLogsPlayer %>% arrange(dateGame,idGame)
@@ -12,6 +14,11 @@ players <- dataGameLogsPlayer %>%
     select(16,42,35,51,30) %>%
     group_by(nameTeam,namePlayer) %>%
     summarise(across(where(is.numeric), ~round(mean(.),1)))
+
+# players <- dataGameLogsPlayer %>%
+#     select(16,42,17:36) %>%
+#     group_by(nameTeam,namePlayer) %>%
+#     summarise(across(where(is.numeric), ~round(mean(.),1)))
 
 pl_pts <- players %>%
     group_by(nameTeam) %>%

@@ -5,10 +5,12 @@
 if (!require("pacman")) install.packages("pacman"); library(pacman)
 pacman::p_load(tidyverse, readxl, lubridate, openxlsx, nbastatR, rvest)
 
+Sys.setenv("VROOM_CONNECTION_SIZE" = 131072 * 2)
+
 rm(list=ls())
 setwd("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/")
 
-# cur_date <- as_date("2021-12-21")
+# cur_date <- as_date("2022-02-05")
 
 ### Pull game logs & arrange by date
 

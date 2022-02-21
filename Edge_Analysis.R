@@ -12,7 +12,7 @@ options(scipen = 999)
 results_book <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Results.xlsx")
 results_book$Date <- as_date(results_book$Date)
 
-results_book <- tail(results_book, 300)
+# results_book <- tail(results_book, 300)
 
 # results_book <- results_book %>%
 #     filter(Date >= Sys.Date() - 21)
