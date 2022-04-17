@@ -3,7 +3,7 @@ pacman::p_load(tidyverse, readxl, na.tools, caTools, Amelia, lubridate, hms,
                ggthemes, ggrepel, ggimage, XML, RCurl, openxlsx,
                rvest, nflfastR, nbastatR, nbaTools, data.table,
                here, skimr, janitor, SimDesign, zoo, future,
-               corrgram, corrplot, tidymodels)
+               corrgram, corrplot, tidymodels, leaps)
                # nortest, multcomp, agricolae, coin, DTK, mutoss)
 
 # install.packages("devtools")
@@ -59,7 +59,7 @@ coef(margin_fit)
 reg_pred <- predict(margin_fit, newdata = test)
 test$pred <- reg_pred
 test$dif <- with(test, Margin - round(pred,0))
-mean(test$Margin != round(reg_pred,0)) # 0.966895
+mean(test$Margin != round(reg_pred,0))
 sum((test$Margin - reg_pred)^2)/nrow(test)
 
 
@@ -77,7 +77,8 @@ shortlistedVars <- shortlistedVars[!shortlistedVars %in% "(Intercept)"] # remove
 print(shortlistedVars)
 
 nba_lin <- nba %>% # 0.966895 - 164.622
-    select(Margin, ORtg_home, ORtg_away, DRtg_home, DRtg_away, ORB_home, TOV_home, oeFG_home, DRB_home, oTOV_home)
+    select(Margin, ORtg_away, DRtg_away, ORtg_home, DRtg_home, Pace_home, ORB_home, TOV_home, oeFG_home,
+           DRB_home, oTOV_home)
 
 
 ### feature selection all features
@@ -116,7 +117,7 @@ rpartImp <- varImp(rPartMod)
 print(rpartImp)
 
 nba_lin <- nba %>% # 0.9748858 - 167.6115
-    select(Margin, oeFG_away, ORtg_away, oeFG_home, ORtg_home, eFG_away, eFG_home, DRtg_away)
+    select(Margin, ORtg_home, oTS_home, oeFG_home, TS_home, TRB_home, oeFG_away, oFG_away, ORtg_away, oTS_away,TS_away)
 
 # set.seed(214)
 # rrfMod <- train(Margin ~ ., data = train, method = "RRF")
@@ -172,7 +173,6 @@ mean(test$Win != round(reg_pred,0)) # 0.3213265
 
 step_model <- win_fit %>% MASS::stepAIC(trace = FALSE)
 coef(step_model)
-
 
 # plots
 res_wf <- as.data.frame(residuals(win_fit))

@@ -10,11 +10,9 @@ Sys.setenv("VROOM_CONNECTION_SIZE" = 131072 * 2)
 rm(list=ls())
 setwd("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/")
 
-# cur_date <- as_date("2022-02-05")
-
 ### Pull game logs & arrange by date
 
-game_logs(seasons = 2022, result_types = c("team","players"))
+game_logs(seasons = 2022, result_types = c("team","players"), season_types = c("Regular Season"))
 
 dataGameLogsTeam <- dataGameLogsTeam %>% arrange(dateGame,idGame)
 dataGameLogsTeam$dateGame <- as_date(dataGameLogsTeam$dateGame)
@@ -40,8 +38,8 @@ colnames(gl) <- c("Date", "teamLoc", "teamName", "opptName", "teamRslt",
 
 ## Filter date if needed
 
-# gl <- gl %>%
-#     filter(Date < cur_date)
+# cur_date <- as_date("2022-03-04")
+# gl <- gl %>% filter(Date < cur_date)
 
 # Filter for home/away 
 

@@ -7,30 +7,30 @@ rm(list=ls()[! ls() %in% c("away_final_wt","home_final_wt","league_avg","standin
 
 library(openxlsx)
 
-yd <- as_date("2022-02-17")
+yd <- as_date("2022-04-16")
 
-#### Keys Key ####
+#### Keys ####
 
 ### spread1
-kendall_spread1 <- 2.607 #2.236
+kendall_spread1 <-  .0
 tyra_spread1 <-     .0
 gisele_spread1 <-   .0
-kate_spread1 <-     .0 #0.599
+kate_spread1 <-     .0
 cindy_spread1 <-    .0
 naomi_spread1 <-    .0
 adriana_spread1 <-  .0
 
 ### spread2
-kendall_spread2 <-  .0 #2.785
-tyra_spread2 <-     .0
+kendall_spread2 <-  .0
+tyra_spread2 <-    4.49
 gisele_spread2 <-   .0
-kate_spread2 <-    4.439 #2.416
+kate_spread2 <-     .0
 cindy_spread2 <-    .0
 naomi_spread2 <-    .0
 adriana_spread2 <-  .0
 
 ### ml
-kendall_ml <-   .0
+kendall_ml <-   .053
 tyra_ml <-      .0
 gisele_ml <-    .0
 kate_ml <-      .0
@@ -41,20 +41,20 @@ adriana_ml <-   .0
 ### over
 kendall_over <- .0
 tyra_over <-    .0
-gisele_over <- 8.665 #8.665
-kate_over <-    .0
+gisele_over <-  .0
+kate_over <-    4.07
 cindy_over <-   .0
 naomi_over <-   .0
 adriana_over <- .0
 
 ### under
-kendall_under <- .0 #2.767
+kendall_under <- .0
 tyra_under <-    .0
-gisele_under <- 1.643 #3.069
-kate_under <-    .0 #0.241
+gisele_under <-  8.603
+kate_under <-    .0
 cindy_under <-   .0
 naomi_under <-   .0
-adriana_under <- .0 #2.306
+adriana_under <- .0
 
 #### RESULTS BOOK ####
 
@@ -63,7 +63,7 @@ xl_results_book$Date <- as_date(xl_results_book$Date)
 
 yesterday_plays <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Plays.xlsx")
 
-game_logs(seasons = 2022, result_types = c("team", "players"))
+game_logs(seasons = 2022, result_types = c("team", "players"), season_types = "Playoffs")
 
 dataGameLogsTeam <- dataGameLogsTeam %>% arrange(dateGame,idGame)
 dataGameLogsTeam$dateGame <- as_date(dataGameLogsTeam$dateGame)
@@ -95,8 +95,8 @@ results_book <- results_book %>%
                                  ML > 0 & (Score - oppScore) < 0 ~ -1,
                                  (Score - oppScore) > 0 ~ 1,
                                  (Score - oppScore) < 0 ~ ML/100)) %>%
-    mutate(Over_Result = if_else(Game_Total > Total, 1, -1.1)) %>%
-    mutate(Under_Result = if_else(Game_Total < Total, 1, -1.1)) %>%
+    mutate(Over_Result = if_else((Game_Total - Total) == 0, 0, if_else(Game_Total > Total, 1, -1.1))) %>%
+    mutate(Under_Result = if_else((Game_Total - Total) == 0, 0, if_else(Game_Total < Total, 1, -1.1))) %>%
     select(1:7, 9:11, 75:81, 12:74) %>%
     rename(oppTeam = oppTeam.x)
 
@@ -275,53 +275,53 @@ plays$Adriana_Under_Edge <- with(plays, Total - Adriana_Total)
 ##### MAKE PLAYS ####
 
 plays$Spread_Play <- with(plays, if_else(
-                                        Kendall_Spread_Edge   >= kendall_spread1
-                                        # & Tyra_Spread_Edge    >= tyra_spread1
-                                        # & Gisele_Spread_Edge  >= gisele_spread1
-                                        # & Kate_Spread_Edge    >= kate_spread1
-                                        # & Cindy_Spread_Edge   >= cindy_spread1
-                                        # & Naomi_Spread_Edge   >= naomi_spread1
-                                        # & Adriana_Spread_Edge >= adriana_spread1
-                                         ,1 , 0))
+                                        # Kendall_Spread_Edge   >= kendall_spread1
+                                        # Tyra_Spread_Edge    >= tyra_spread1
+                                        # Gisele_Spread_Edge  >= gisele_spread1
+                                        # Kate_Spread_Edge    >= kate_spread1
+                                        # Cindy_Spread_Edge   >= cindy_spread1
+                                        # Naomi_Spread_Edge   >= naomi_spread1
+                                        Adriana_Spread_Edge >= adriana_spread1
+                                         ,0 , 0))
 
 plays$Spread2_Play <- with(plays, if_else(
                                         #Kendall_Spread2_Edge   >= kendall_spread2
-                                        # & Tyra_Spread2_Edge    >= tyra_spread2
-                                        # & Gisele_Spread2_Edge  >= gisele_spread2
-                                        Kate_Spread2_Edge    >= kate_spread2
-                                        # & Cindy_Spread2_Edge   >= cindy_spread2
-                                        # & Naomi_Spread2_Edge   >= naomi_spread2
-                                        # & Adriana_Spread2_Edge >= adriana_spread2
+                                        Tyra_Spread2_Edge    >= tyra_spread2
+                                        # Gisele_Spread2_Edge  >= gisele_spread2
+                                        # Kate_Spread2_Edge    >= kate_spread2
+                                        # Cindy_Spread2_Edge   >= cindy_spread2
+                                        # Naomi_Spread2_Edge   >= naomi_spread2
+                                        # Adriana_Spread2_Edge >= adriana_spread2
                                          ,1 , 0))
-# not playing ML right now - set True to 0
+
 plays$ML_Play <- with(plays, if_else(
                                     Kendall_ML_Edge   > kendall_ml
-                                    & Tyra_ML_Edge    > tyra_ml
-                                    & Gisele_ML_Edge  > gisele_ml
-                                    & Kate_ML_Edge    > kate_ml
-                                    & Cindy_ML_Edge   > cindy_ml
-                                    & Naomi_ML_Edge   > naomi_ml
-                                    & Adriana_ML_Edge > adriana_ml
-                                     ,0 , 0))
+                                    # Tyra_ML_Edge    > tyra_ml
+                                    # Gisele_ML_Edge  > gisele_ml
+                                    # Kate_ML_Edge    > kate_ml
+                                    # Cindy_ML_Edge   > cindy_ml
+                                    # Naomi_ML_Edge   > naomi_ml
+                                    # Adriana_ML_Edge > adriana_ml
+                                     ,1 , 0))
 
 plays$Over_Play <- with(plays, if_else(
                                         # Kendall_Over_Edge   >= kendall_over
-                                        # & Tyra_Over_Edge    >= tyra_over
-                                        Gisele_Over_Edge  >= gisele_over
-                                        # & Kate_Over_Edge    >= kate_over
-                                        # & Cindy_Over_Edge   >= cindy_over
-                                        # & Naomi_Over_Edge   >= naomi_over
-                                        # & Adriana_Over_Edge >= adriana_over
+                                        # Tyra_Over_Edge    >= tyra_over
+                                        # Gisele_Over_Edge  >= gisele_over
+                                        Kate_Over_Edge    >= kate_over
+                                        # Cindy_Over_Edge   >= cindy_over
+                                        # Naomi_Over_Edge   >= naomi_over
+                                        # Adriana_Over_Edge >= adriana_over
                                          ,1 , 0))
 
 plays$Under_Play <- with(plays, if_else(
                                       # Kendall_Under_Edge   >= kendall_under
-                                      # & Tyra_Under_Edge    >= tyra_under
+                                      # Tyra_Under_Edge    >= tyra_under
                                       Gisele_Under_Edge  >= gisele_under
-                                      # & Kate_Under_Edge    >= kate_under
-                                      # & Cindy_Under_Edge   >= cindy_under
-                                      # & Naomi_Under_Edge   >= naomi_under
-                                      # & Adriana_Under_Edge >= adriana_under
+                                      # Kate_Under_Edge    >= kate_under
+                                      # Cindy_Under_Edge   >= cindy_under
+                                      # Naomi_Under_Edge   >= naomi_under
+                                      # Adriana_Under_Edge >= adriana_under
                                        ,1, 0))
 
 ##### Fix Output #####
@@ -332,7 +332,17 @@ plays[, c(29:32,62:66)] <- sapply(plays[, c(29:32,62:66)], as.numeric)
 
 bets <- plays %>%
     filter(Spread_Play == 1 | Spread2_Play == 1 | ML_Play == 1 | Over_Play == 1 | Under_Play == 1) %>%
-    select(1:8, 72:76)
+    mutate(Spread_Bet = if_else(Spread_Play == 1 | Spread2_Play == 1, 1, 0)) %>%
+    mutate(ML_Bet = if_else(ML_Play == 1, 1, 0)) %>%
+    mutate(Over_Bet = if_else(Over_Play == 1, 1, 0)) %>%
+    mutate(Under_Bet = if_else(Under_Play == 1, 1, 0)) %>%
+    rename(Spread_Odds = Spread, ML_Odds = ML, Total_Odds = Total) %>%
+    select(2,3,5:8, 77:80)
+
+bets <- bets %>%
+    pivot_longer(cols = 4:10, names_to = c("Bet_Type", ".value"),  names_sep="_") %>%
+    filter(Bet == 1) %>%
+    select(1:5)
 
 ##### EXPORT TO EXCEL ######
 detach("package:XLConnect", unload = TRUE)
@@ -352,6 +362,14 @@ wb <- loadWorkbook("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22
 deleteData(wb, "Plays", gridExpand = T, cols = 1:76, rows = 1:50)
 writeData(wb, "Plays", x = plays)
 saveWorkbook(wb, u2, overwrite = T)
+
+fn <- "Bets"
+u <- paste0("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/",fn,".xlsx")
+
+wb <- createWorkbook()
+addWorksheet(wb, sheetName = "Website Bets")
+writeData(wb, sheet = "Website Bets", x = bets)
+saveWorkbook(wb, file = u)
 
 #### Creating workbook
 

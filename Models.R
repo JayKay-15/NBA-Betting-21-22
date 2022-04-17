@@ -12,7 +12,7 @@ library(XLConnect)
 td <- as_date(Sys.Date())
 
 ## If not current day
-# td <- as_date("2021-11-19")
+# td <- as_date("2022-04-05")
 
 sched <- nbastatR::current_schedule()
 
@@ -28,7 +28,7 @@ slate <- slate %>%
 
 ### Read in Database ###
 
-master_db <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBAdb/NBAdb1721.xlsx") 
+master_db <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBAdb/NBAdb1722.xlsx") 
 
 #### Kendall #### - Rating and Pythag formulas
 

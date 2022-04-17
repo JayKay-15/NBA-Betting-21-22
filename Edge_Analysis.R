@@ -12,10 +12,9 @@ options(scipen = 999)
 results_book <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Results.xlsx")
 results_book$Date <- as_date(results_book$Date)
 
-# results_book <- tail(results_book, 300)
-
-# results_book <- results_book %>%
-#     filter(Date >= Sys.Date() - 21)
+fil <- 21
+results_book <- results_book %>%
+    filter(Date >= max(Date) - fil)
 
 ### Add Wager columns for calculating ML ROI
 results_book <- results_book %>%
@@ -106,7 +105,14 @@ peak_list_s <- map(peaker_s, as.data.table)
 spread_peak <- rbindlist(peak_list_s, fill = TRUE, idcol = F)
 spread_peak <- spread_peak %>% select(1,4:12) %>% arrange(desc(Cume))
 
+spread_peak_filtered <- spread_peak %>%
+    mutate(num_models = rowSums(is.na(spread_peak))) %>%
+    filter(num_models == 6) %>%
+    select(1:10)
 
+spread_peak_filtered <- spread_peak_filtered %>%
+    pivot_longer(cols = !gameNum:ROI, names_to = "Model", values_to = "Key") %>%
+    drop_na()
 
 
 ### Spread2
@@ -139,7 +145,14 @@ peak_list_s2 <- map(peaker_s2, as.data.table)
 spread2_peak <- rbindlist(peak_list_s2, fill = TRUE, idcol = F)
 spread2_peak <- spread2_peak %>% select(1,4:12) %>% arrange(desc(Cume))
 
+spread2_peak_filtered <- spread2_peak %>%
+    mutate(num_models = rowSums(is.na(spread2_peak))) %>%
+    filter(num_models == 6) %>%
+    select(1:10)
 
+spread2_peak_filtered <- spread2_peak_filtered %>%
+    pivot_longer(cols = !gameNum:ROI, names_to = "Model", values_to = "Key") %>%
+    drop_na()
 
 
 
@@ -173,6 +186,16 @@ peak_list_m <- map(peaker_m, as.data.table)
 ml_peak <- rbindlist(peak_list_m, fill = TRUE, idcol = F)
 ml_peak <- ml_peak %>% select(1,4:12) %>% arrange(desc(Cume))
 
+ml_peak_filtered <- ml_peak %>%
+    mutate(num_models = rowSums(is.na(ml_peak))) %>%
+    filter(num_models == 6) %>%
+    select(1:10)
+
+ml_peak_filtered <- ml_peak_filtered %>%
+    pivot_longer(cols = !gameNum:ROI, names_to = "Model", values_to = "Key") %>%
+    drop_na()
+
+
 
 ### Over
 results_o <- list()
@@ -204,7 +227,14 @@ peak_list_o <- map(peaker_o, as.data.table)
 over_peak <- rbindlist(peak_list_o, fill = TRUE, idcol = F)
 over_peak <- over_peak %>% select(1,4:12) %>% arrange(desc(Cume))
 
+over_peak_filtered <- over_peak %>%
+    mutate(num_models = rowSums(is.na(over_peak))) %>%
+    filter(num_models == 6) %>%
+    select(1:10)
 
+over_peak_filtered <- over_peak_filtered %>%
+    pivot_longer(cols = !gameNum:ROI, names_to = "Model", values_to = "Key") %>%
+    drop_na()
 
 
 ### Under
@@ -237,42 +267,71 @@ peak_list_u <- map(peaker_u, as.data.table)
 under_peak <- rbindlist(peak_list_u, fill = TRUE, idcol = F)
 under_peak <- under_peak %>% select(1,4:12) %>% arrange(desc(Cume))
 
+under_peak_filtered <- under_peak %>%
+    mutate(num_models = rowSums(is.na(under_peak))) %>%
+    filter(num_models == 6) %>%
+    select(1:10)
+
+under_peak_filtered <- under_peak_filtered %>%
+    pivot_longer(cols = !gameNum:ROI, names_to = "Model", values_to = "Key") %>%
+    drop_na()
+
+
 
 #### Print to Excel ####
-
-fn <- "Keys"
-u <- paste0("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/",fn,".xlsx")
-
-wb <- loadWorkbook("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Keys.xlsx")
-deleteData(wb, "Spread Peak", gridExpand = F, cols = 1:130, rows = 1:130)
-deleteData(wb, "Spread2 Peak", gridExpand = F, cols = 1:130, rows = 1:130)
-deleteData(wb, "ML Peak", gridExpand = F, cols = 1:130, rows = 1:130)
-deleteData(wb, "Over Peak", gridExpand = F, cols = 1:130, rows = 1:130)
-deleteData(wb, "Under Peak", gridExpand = F, cols = 1:130, rows = 1:130)
-writeData(wb, "Spread Peak", x = spread_peak)
-writeData(wb, "Spread2 Peak", x = spread2_peak)
-writeData(wb, "ML Peak", x = ml_peak)
-writeData(wb, "Over Peak", x = over_peak)
-writeData(wb, "Under Peak", x = under_peak)
-saveWorkbook(wb, u, overwrite = T)
+# fn <- "Keys_14"
+# u <- paste0("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/",fn,".xlsx")
+# 
+# wb <- loadWorkbook("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Keys.xlsx")
+# deleteData(wb, "Spread Peak", gridExpand = F, cols = 1:130, rows = 1:130)
+# deleteData(wb, "Spread2 Peak", gridExpand = F, cols = 1:130, rows = 1:130)
+# deleteData(wb, "ML Peak", gridExpand = F, cols = 1:130, rows = 1:130)
+# deleteData(wb, "Over Peak", gridExpand = F, cols = 1:130, rows = 1:130)
+# deleteData(wb, "Under Peak", gridExpand = F, cols = 1:130, rows = 1:130)
+# deleteData(wb, "Spread Peak Filtered", gridExpand = F, cols = 1:130, rows = 1:130)
+# deleteData(wb, "Spread2 Peak Filtered", gridExpand = F, cols = 1:130, rows = 1:130)
+# deleteData(wb, "ML Peak Filtered", gridExpand = F, cols = 1:130, rows = 1:130)
+# deleteData(wb, "Over Peak Filtered", gridExpand = F, cols = 1:130, rows = 1:130)
+# deleteData(wb, "Under Peak Filtered", gridExpand = F, cols = 1:130, rows = 1:130)
+# writeData(wb, "Spread Peak", x = spread_peak)
+# writeData(wb, "Spread2 Peak", x = spread2_peak)
+# writeData(wb, "ML Peak", x = ml_peak)
+# writeData(wb, "Over Peak", x = over_peak)
+# writeData(wb, "Under Peak", x = under_peak)
+# writeData(wb, "Spread Peak Filtered", x = spread_peak_filtered)
+# writeData(wb, "Spread2 Peak Filtered", x = spread2_peak_filtered)
+# writeData(wb, "ML Peak Filtered", x = ml_peak_filtered)
+# writeData(wb, "Over Peak Filtered", x = over_peak_filtered)
+# writeData(wb, "Under Peak Filtered", x = under_peak_filtered)
+# saveWorkbook(wb, u, overwrite = T)
 
 
 #### Creating workbook
 
-# fn <- "Key_2wks"
-# u <- paste0("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/",fn,".xlsx")
-# 
-# wb <- createWorkbook()
-# addWorksheet(wb, sheetName = "Spread Peak")
-# addWorksheet(wb, sheetName = "Spread2 Peak")
-# addWorksheet(wb, sheetName = "ML Peak")
-# addWorksheet(wb, sheetName = "Over Peak")
-# addWorksheet(wb, sheetName = "Under Peak")
-# writeData(wb, sheet = "Spread Peak", x = spread_peak)
-# writeData(wb, sheet = "Spread2 Peak", x = spread2_peak)
-# writeData(wb, sheet = "ML Peak", x = ml_peak)
-# writeData(wb, sheet = "Over Peak", x = over_peak)
-# writeData(wb, sheet = "Under Peak", x = under_peak)
-# saveWorkbook(wb, file = u)
+fn <- "Keys_21"
+u <- paste0("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/",fn,".xlsx")
+
+wb <- createWorkbook()
+addWorksheet(wb, sheetName = "Spread Peak Filtered")
+addWorksheet(wb, sheetName = "Spread2 Peak Filtered")
+addWorksheet(wb, sheetName = "ML Peak Filtered")
+addWorksheet(wb, sheetName = "Over Peak Filtered")
+addWorksheet(wb, sheetName = "Under Peak Filtered")
+addWorksheet(wb, sheetName = "Spread Peak")
+addWorksheet(wb, sheetName = "Spread2 Peak")
+addWorksheet(wb, sheetName = "ML Peak")
+addWorksheet(wb, sheetName = "Over Peak")
+addWorksheet(wb, sheetName = "Under Peak")
+writeData(wb, "Spread Peak Filtered", x = spread_peak_filtered)
+writeData(wb, "Spread2 Peak Filtered", x = spread2_peak_filtered)
+writeData(wb, "ML Peak Filtered", x = ml_peak_filtered)
+writeData(wb, "Over Peak Filtered", x = over_peak_filtered)
+writeData(wb, "Under Peak Filtered", x = under_peak_filtered)
+writeData(wb, sheet = "Spread Peak", x = spread_peak)
+writeData(wb, sheet = "Spread2 Peak", x = spread2_peak)
+writeData(wb, sheet = "ML Peak", x = ml_peak)
+writeData(wb, sheet = "Over Peak", x = over_peak)
+writeData(wb, sheet = "Under Peak", x = under_peak)
+saveWorkbook(wb, file = u)
 
 
