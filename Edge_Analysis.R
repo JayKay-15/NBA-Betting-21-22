@@ -12,9 +12,13 @@ options(scipen = 999)
 results_book <- read_xlsx("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Results.xlsx")
 results_book$Date <- as_date(results_book$Date)
 
-fil <- 21
+# fil <- 21
+# results_book <- results_book %>%
+#     filter(Date >= max(Date) - fil)
+# results_book <- results_book %>%
+#     tail(300)
 results_book <- results_book %>%
-    filter(Date >= max(Date) - fil)
+    filter(Date >= '2022-04-15')
 
 ### Add Wager columns for calculating ML ROI
 results_book <- results_book %>%
@@ -308,7 +312,7 @@ under_peak_filtered <- under_peak_filtered %>%
 
 #### Creating workbook
 
-fn <- "Keys_21"
+fn <- "Keys"
 u <- paste0("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/",fn,".xlsx")
 
 wb <- createWorkbook()

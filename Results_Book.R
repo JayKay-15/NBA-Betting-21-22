@@ -7,7 +7,7 @@ rm(list=ls()[! ls() %in% c("away_final_wt","home_final_wt","league_avg","standin
 
 library(openxlsx)
 
-yd <- as_date("2022-04-16")
+yd <- as_date("2022-05-10")
 
 #### Keys ####
 
@@ -15,14 +15,14 @@ yd <- as_date("2022-04-16")
 kendall_spread1 <-  .0
 tyra_spread1 <-     .0
 gisele_spread1 <-   .0
-kate_spread1 <-     .0
+kate_spread1 <-    3.923
 cindy_spread1 <-    .0
 naomi_spread1 <-    .0
 adriana_spread1 <-  .0
 
 ### spread2
 kendall_spread2 <-  .0
-tyra_spread2 <-    4.49
+tyra_spread2 <-     .0 # 4.49
 gisele_spread2 <-   .0
 kate_spread2 <-     .0
 cindy_spread2 <-    .0
@@ -30,9 +30,9 @@ naomi_spread2 <-    .0
 adriana_spread2 <-  .0
 
 ### ml
-kendall_ml <-   .053
+kendall_ml <-   .0 # .053
 tyra_ml <-      .0
-gisele_ml <-    .0
+gisele_ml <-    .098
 kate_ml <-      .0
 cindy_ml <-     .0
 naomi_ml <-     .0
@@ -42,15 +42,15 @@ adriana_ml <-   .0
 kendall_over <- .0
 tyra_over <-    .0
 gisele_over <-  .0
-kate_over <-    4.07
+kate_over <-  12.939 # 4.07
 cindy_over <-   .0
 naomi_over <-   .0
 adriana_over <- .0
 
 ### under
-kendall_under <- .0
+kendall_under <-2.648
 tyra_under <-    .0
-gisele_under <-  8.603
+gisele_under <-  .0 # 8.603
 kate_under <-    .0
 cindy_under <-   .0
 naomi_under <-   .0
@@ -278,11 +278,11 @@ plays$Spread_Play <- with(plays, if_else(
                                         # Kendall_Spread_Edge   >= kendall_spread1
                                         # Tyra_Spread_Edge    >= tyra_spread1
                                         # Gisele_Spread_Edge  >= gisele_spread1
-                                        # Kate_Spread_Edge    >= kate_spread1
+                                        Kate_Spread_Edge    >= kate_spread1
                                         # Cindy_Spread_Edge   >= cindy_spread1
                                         # Naomi_Spread_Edge   >= naomi_spread1
-                                        Adriana_Spread_Edge >= adriana_spread1
-                                         ,0 , 0))
+                                        # Adriana_Spread_Edge >= adriana_spread1
+                                         ,1 , 0))
 
 plays$Spread2_Play <- with(plays, if_else(
                                         #Kendall_Spread2_Edge   >= kendall_spread2
@@ -292,12 +292,12 @@ plays$Spread2_Play <- with(plays, if_else(
                                         # Cindy_Spread2_Edge   >= cindy_spread2
                                         # Naomi_Spread2_Edge   >= naomi_spread2
                                         # Adriana_Spread2_Edge >= adriana_spread2
-                                         ,1 , 0))
+                                         ,0 , 0))
 
 plays$ML_Play <- with(plays, if_else(
-                                    Kendall_ML_Edge   > kendall_ml
+                                    # Kendall_ML_Edge   > kendall_ml
                                     # Tyra_ML_Edge    > tyra_ml
-                                    # Gisele_ML_Edge  > gisele_ml
+                                    Gisele_ML_Edge  > gisele_ml
                                     # Kate_ML_Edge    > kate_ml
                                     # Cindy_ML_Edge   > cindy_ml
                                     # Naomi_ML_Edge   > naomi_ml
@@ -315,9 +315,9 @@ plays$Over_Play <- with(plays, if_else(
                                          ,1 , 0))
 
 plays$Under_Play <- with(plays, if_else(
-                                      # Kendall_Under_Edge   >= kendall_under
+                                      Kendall_Under_Edge   >= kendall_under
                                       # Tyra_Under_Edge    >= tyra_under
-                                      Gisele_Under_Edge  >= gisele_under
+                                      # Gisele_Under_Edge  >= gisele_under
                                       # Kate_Under_Edge    >= kate_under
                                       # Cindy_Under_Edge   >= cindy_under
                                       # Naomi_Under_Edge   >= naomi_under

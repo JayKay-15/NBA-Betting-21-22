@@ -12,7 +12,7 @@ setwd("/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/")
 
 ### Pull game logs & arrange by date
 
-game_logs(seasons = 2022, result_types = c("team","players"), season_types = c("Regular Season"))
+game_logs(seasons = 2022, result_types = c("team","players"), season_types = c("Regular Season","Playoffs"))
 
 dataGameLogsTeam <- dataGameLogsTeam %>% arrange(dateGame,idGame)
 dataGameLogsTeam$dateGame <- as_date(dataGameLogsTeam$dateGame)
