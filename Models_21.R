@@ -2,7 +2,7 @@
 #### MODELS ####
 ################
 
-rm(list=ls()[! ls() %in% c("away_final_wt","home_final_wt","league_avg","standings")])
+# rm(list=ls()[! ls() %in% c("away_final_wt","home_final_wt","league_avg","standings")])
 
 library(progress)
 library(XLConnect)
@@ -11,8 +11,8 @@ library(XLConnect)
 
 td <- as_date(Sys.Date())
 
-## If not current day
-# td <- as_date("2022-04-05")
+# If not current day
+td <- as_date("2022-05-15")
 
 sched <- nbastatR::current_schedule()
 

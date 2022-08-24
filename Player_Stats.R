@@ -63,3 +63,14 @@ saveWorkbook(wb, file = "/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-
 # 
 # saveWorkbook(wb, file = "/Users/Jesse/Documents/MyStuff/NBA Betting/NBA-Betting-21-22/Players.xlsx")
 
+# new players table ----------------------------------
+players <- dataGameLogsPlayer %>%
+    select(16,42,17:36) %>%
+    group_by(nameTeam,namePlayer) %>%
+    summarise(across(numberGamePlayerSeason, max), 
+              across(c(minutes:fga, fg3m:fg3a, ftm:fta, oreb:pts), ~round(mean(.),1)),
+              across(plusminus, sum)) %>%
+    mutate(pctFG = round(fgm/fga,3),
+           pctFG3 = round(fg3m/fg3a,3),
+           pctFT = round(ftm/fta,3))
+

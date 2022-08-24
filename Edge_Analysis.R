@@ -77,8 +77,6 @@ combos_result_u <- lapply(1:7, function(x) combn(c("Kendall_Under_Result","Tyra_
 combos_result_u <- unlist(combos_result_u, recursive = F)
 
 
-
-
 ### Spread
 results_s <- list()
 for (i in seq_along(combos_s)) {
